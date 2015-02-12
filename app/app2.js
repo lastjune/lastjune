@@ -18,7 +18,7 @@ fs.readFile('target.xml',function(err,data){
 function jsonhandler(o){
 	var tag="div";//default treated as div element
 	if(arguments[1]){
-		tag=arguments[1];
+		tag=arguments[1];//get the correct tag from argument.
 	}
 	var beginTag="<"+tag+">";
 	var closeTag="</"+tag+">";
@@ -38,7 +38,7 @@ function jsonhandler(o){
 			else if(o[el] instanceof Object ){//second level
 				h+=jsonhandler(o[el],mapping[el]);
 			}
-			else{
+			else{//handler logic
 				var type=typeof(el);
 				if(type=="string"){
 				
@@ -54,6 +54,6 @@ function jsonhandler(o){
 function addProptites(s){
 	//TODO
 	if(typeof(s)=="string"){
-		s. 
+		
 	}
 }
