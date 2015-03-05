@@ -1,8 +1,10 @@
 'use strict';
 var LIVERELOAD_PORT = 35729;
 var SERVER_PORT = 9000;
-var lrSnippet = require('connect-livereload')({port: LIVERELOAD_PORT});
-var mountFolder = function (connect, dir) {
+var lrSnippet = require('connect-livereload')({
+    port: LIVERELOAD_PORT
+});
+var mountFolder = function(connect, dir) {
     return connect.static(require('path').resolve(dir));
 };
 
@@ -13,7 +15,7 @@ var mountFolder = function (connect, dir) {
 // 'test/spec/**/*.js'
 // templateFramework: 'handlebars'
 
-module.exports = function (grunt) {
+module.exports = function(grunt) {
     // show elapsed time at the end
     require('time-grunt')(grunt);
     // load all grunt tasks
@@ -38,27 +40,41 @@ module.exports = function (grunt) {
                 },
                 files: [
                     '<%= yeoman.app %>/*.html',
+                    '<%= yeoman.app %>/scripts/jsx/*.jsx',
+                    '<%= yeoman.app %>/scripts/jsx/**/*.jsx',
                     '{.tmp,<%= yeoman.app %>}/styles/{,*/}*.css',
                     '{.tmp,<%= yeoman.app %>}/scripts/{,*/}*.js',
+                    '{.tmp,<%= yeoman.app %>}/scripts/jsx/{,*/}*.js',
                     '<%= yeoman.app %>/images/{,*/}*.{png,jpg,jpeg,gif,webp}',
                     '<%= yeoman.app %>/scripts/templates/*.{ejs,mustache,hbs}',
                     'test/spec/**/*.js'
                 ]
             },
-            handlebars: {
-                files: [
-                    '<%= yeoman.app %>/scripts/templates/*.hbs'
-                ],
-                tasks: ['handlebars']
+            less: {
+                files: ['app/styles/.less/*.less'],
+                tasks: ['less'],
+                options: {
+                    livereload: false
+                }
             },
-			less: { files: ['app/styles/.less/*.less'], tasks:['less'], options: {livereload:false} },
-
-			browserify: {
-				files: ['app/scripts/.jsx/*.jsx'], tasks:['browserify'], options: {livereload:false} 
+			react:{
+				files: ['<%= yeoman.app %>/scripts/jsx/*.jsx','<%= yeoman.app %>/scripts/jsx/**/*.jsx'],
+				tasks: ['react:dynamic_mappings']
 			},
             test: {
                 files: ['<%= yeoman.app %>/scripts/{,*/}*.js', 'test/spec/**/*.js'],
                 tasks: ['test:true']
+            }
+        },
+        react: {
+            dynamic_mappings: {
+                files: [{
+                    expand: true,
+                    cwd: '<%= yeoman.app %>/scripts/jsx/',
+                    src: ['**/*.jsx'],
+                    dest: '<%= yeoman.app %>/scripts/',
+                    ext: '.js'
+                }]
             }
         },
         connect: {
@@ -69,7 +85,7 @@ module.exports = function (grunt) {
             },
             livereload: {
                 options: {
-                    middleware: function (connect) {
+                    middleware: function(connect) {
                         return [
                             lrSnippet,
                             mountFolder(connect, '.tmp'),
@@ -81,7 +97,7 @@ module.exports = function (grunt) {
             test: {
                 options: {
                     port: 9001,
-                    middleware: function (connect) {
+                    middleware: function(connect) {
                         return [
                             lrSnippet,
                             mountFolder(connect, '.tmp'),
@@ -93,7 +109,7 @@ module.exports = function (grunt) {
             },
             dist: {
                 options: {
-                    middleware: function (connect) {
+                    middleware: function(connect) {
                         return [
                             mountFolder(connect, yeomanConfig.dist)
                         ];
@@ -140,12 +156,11 @@ module.exports = function (grunt) {
                     baseUrl: '<%= yeoman.app %>/scripts',
                     optimize: 'none',
                     paths: {
-                        'templates': '../../.tmp/scripts/templates',
                         'jquery': '../../<%= yeoman.app %>/bower_components/jquery/dist/jquery',
                         'underscore': '../../<%= yeoman.app %>/bower_components/lodash/dist/lodash',
                         'backbone': '../../<%= yeoman.app %>/bower_components/backbone/backbone',
-						'less':'../../<%= yeoman.app &>/bower_components/less/less',
-						'react':'../../<%= yeoman.app &>/bower_components/react/react'
+                        'less': '../../<%= yeoman.app &>/bower_components/less/less',
+                        'react': '../../<%= yeoman.app &>/bower_components/react/react'
                     },
                     // TODO: Figure out how to make sourcemaps work with grunt-usemin
                     // https://github.com/yeoman/grunt-usemin/issues/30
@@ -154,7 +169,7 @@ module.exports = function (grunt) {
                     // http://requirejs.org/docs/errors.html#sourcemapcomments
                     preserveLicenseComments: false,
                     useStrict: true
-                    //uglify2: {} // https://github.com/mishoo/UglifyJS2
+                        //uglify2: {} // https://github.com/mishoo/UglifyJS2
                 }
             }
         },
@@ -235,17 +250,6 @@ module.exports = function (grunt) {
                 rjsConfig: '<%= yeoman.app %>/scripts/main.js'
             }
         },
-        handlebars: {
-            compile: {
-                options: {
-                    namespace: 'JST',
-                    amd: true
-                },
-                files: {
-                    '.tmp/scripts/templates.js': ['<%= yeoman.app %>/scripts/templates/*.hbs']
-                }
-            }
-        },
         rev: {
             dist: {
                 files: {
@@ -258,40 +262,28 @@ module.exports = function (grunt) {
                 }
             }
         },
-		less: { 
-			development: {
-				//files: [{
-					//expand: true, 
-					//cwd: './less/', 
-					//src: ['**/*.less'], 
-					//dest: './static/css', 
-					//ext: '.css' 
-				//}]
-				files:[
-					{'app/styles/result.css': 'app/styles/.less/source.less'}
-				]
-			}
-		},
-		browserify: {
-			options: { 
-				transform: [ require('grunt-react').browserify ]
-			},
-			app: {
-				src:        'app/scripts/.jsx/input.jsx',
-				dest:       'app/scripts/output.js'
-			}}
-	});
-
-    grunt.registerTask('createDefaultTemplate', function () {
-        grunt.file.write('.tmp/scripts/templates.js', 'this.JST = this.JST || {};');
+        less: {
+            development: {
+                //files: [{
+                //expand: true, 
+                //cwd: './less/', 
+                //src: ['**/*.less'], 
+                //dest: './static/css', 
+                //ext: '.css' 
+                //}]
+                files: [{
+                    'app/styles/result.css': 'app/styles/.less/source.less'
+                }]
+            }
+        }
     });
 
-    grunt.registerTask('server', function (target) {
+    grunt.registerTask('server', function(target) {
         grunt.log.warn('The `server` task has been deprecated. Use `grunt serve` to start a server.');
         grunt.task.run(['serve' + (target ? ':' + target : '')]);
     });
 
-    grunt.registerTask('serve', function (target) {
+    grunt.registerTask('serve', function(target) {
         if (target === 'dist') {
             return grunt.task.run(['build', 'open:server', 'connect:dist:keepalive']);
         }
@@ -299,9 +291,9 @@ module.exports = function (grunt) {
         if (target === 'test') {
             return grunt.task.run([
                 'clean:server',
-                'createDefaultTemplate',
+                //'createDefaultTemplate',
                 'handlebars',
-				'less',
+                'less',
                 'connect:test',
                 'open:test',
                 'watch'
@@ -310,27 +302,25 @@ module.exports = function (grunt) {
 
         grunt.task.run([
             'clean:server',
-            'createDefaultTemplate',
-            'handlebars',
-			'less',
-			'browserify',
+            'less',
+			'react:dynamic_mappings',
             'connect:livereload',
             'open:server',
             'watch'
         ]);
     });
 
-    grunt.registerTask('test', function (isConnected) {
+    grunt.registerTask('test', function(isConnected) {
         isConnected = Boolean(isConnected);
         var testTasks = [
-                'clean:server',
-                'createDefaultTemplate',
-                'handlebars',
-                'connect:test',
-                'mocha',
-            ];
+            'clean:server',
+            'createDefaultTemplate',
+            'handlebars',
+            'connect:test',
+            'mocha',
+        ];
 
-        if(!isConnected) {
+        if (!isConnected) {
             return grunt.task.run(testTasks);
         } else {
             // already connected so not going to connect again, remove the connect:test task
@@ -341,10 +331,10 @@ module.exports = function (grunt) {
 
     grunt.registerTask('build', [
         'clean:dist',
-        'createDefaultTemplate',
-        'handlebars',
-		'less',
-		'browserify',
+        //'createDefaultTemplate',
+        //'handlebars',
+        'less',
+		'react:dynamic_mappings',
         'useminPrepare',
         'requirejs',
         'imagemin',
@@ -360,7 +350,6 @@ module.exports = function (grunt) {
     grunt.loadNpmTasks('grunt-contrib-less');
 
     grunt.loadNpmTasks('grunt-react');
-	grunt.loadNpmTasks('grunt-browserify');
 
     grunt.registerTask('default', [
         'jshint',

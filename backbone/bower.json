@@ -8,7 +8,8 @@
     "requirejs": "~2.1.10",
     "requirejs-text": "~2.0.10",
     "modernizr": "~2.7.1",
-    "handlebars": "~2.0.0"
+    "handlebars": "~2.0.0",
+	"backbone.localStorage":"~1.1.16"
   },
   "devDependencies": {
     "react": "~0.12.2"
