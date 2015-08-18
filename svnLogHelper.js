@@ -9,7 +9,7 @@
 
 var fs=require('fs'),
     buffer=require('buffer'),
-    arguments=process.argv.splice(2)
+    arguments=process.argv.splice(2),
     inputFileName="inputFile",
     outputFileName="outputFile";
 
@@ -32,15 +32,15 @@ fs.readFile(inputFileName,function(err,data){
             result.push(l[n].trim().split(' ').toString());
         }
     }
-    result=result.splice(1,result.length-2);//去除收尾两行无用信息
+    result=result.splice(1,result.length-2);//去除首尾两行无用信息
     var versionNumber="版本: "+result[0].match(/[r]{1}[0-9]{5}/);
-    versionNumber=versionNumber.replace('r','')+'\n';
-    var author="作者: design_qj"+'\n';
-    var datetime="日期: "+result[0].match(/2015-.*\,/)+'\n';
-    var info="信息: \n"+result[result.length-1].toString()+'\n';
-    var split="---"+'\n';
+    versionNumber=versionNumber.replace('r','')+'\r\n';
+    var author="作者: design_qj"+'\r\n';
+    var datetime="日期: "+result[0].match(/2015-.*\,/).toString().substring(0,19)+'\r\n';
+    var info="信息: \r\n"+result[result.length-1].toString()+'\r\n';
+    var split="---"+'\r\n';
     var detail= result.splice(2,result.length-3).toString()+'\n';//取本次日志的详细信息
-    var detail=detail.replace(/M\,/g,'已修改: ','').replace(/A\,/g,'已增加: ').replace(/D,/g,'已删除: ').replace(/\,/g,'\n');//适配tortoise
+    var detail=detail.replace(/M\,/g,'已修改: ','').replace(/A\,/g,'已增加: ').replace(/D,/g,'已删除: ').replace(/\,/g,'\r\n');//适配tortoise
     var output=versionNumber+author+datetime+info+split+detail;
     fs.writeFile(outputFileName,output,function(err){
         if(err) throw err;
