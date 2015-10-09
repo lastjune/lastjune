@@ -27,7 +27,7 @@ function swallowError(error){
 /* browserify */
 gulp.task('browserify', function() {
 
-    var bundler = browserify( ['./app/scripts/main.js', './app/scripts/login.js']) // Only need initial file, browserify finds the deps
+    var bundler = browserify( ['./src/scripts/main.js', './src/scripts/login.js']) // Only need initial file, browserify finds the deps
         .transform(reactify)
         .on('error',function(err){
             gutil.log(err.message);
@@ -41,17 +41,17 @@ gulp.task('browserify', function() {
             watcher.bundle()
                 .pipe(source('app.js'))
                 // This is where you add uglifying etc.
-                .pipe(gulp.dest('./app/scripts/'));
+                .pipe(gulp.dest('./src/scripts/'));
             console.log('Updated!', (Date.now() - updateStart) + 'ms');
         })
         .bundle() // Create the initial bundle when starting the task
         .pipe(source('app.js'))
-        .pipe(gulp.dest('./app/scripts/'));
+        .pipe(gulp.dest('./src/scripts/'));
 });
 
 /* styles */
 gulp.task('styles', function() {
-    return gulp.src('app/styles/main.less')
+    return gulp.src('./src/styles/main.less')
         .pipe(plumber())
         .pipe(less({
             style: 'expanded',
@@ -60,14 +60,14 @@ gulp.task('styles', function() {
         .pipe(autoprefixer({
             browsers: ['last 1 version']
         }))
-        .pipe(gulp.dest('app/styles'));
+        .pipe(gulp.dest('src/styles'));
 
 });
 
 
 /* js hint */
 gulp.task('jshint', function() {
-    return gulp.src('app/scripts/**/*.js')
+    return gulp.src('src/scripts/**/*.js')
         .pipe(jshint())
         .pipe(jshint.reporter('jshint-stylish'))
         .pipe(jshint.reporter('fail'));
@@ -80,8 +80,8 @@ gulp.task('connect', ['styles', 'browserify'], function() {
         .use(require('connect-livereload')({
             port: 35729
         }))
-        .use(serveStatic('app'))
-        .use(serveIndex('app'));
+        .use(serveStatic('src'))
+        .use(serveIndex('src'));
 
     require('http').createServer(app)
         .listen(9005)
@@ -103,16 +103,16 @@ gulp.task('watch', ['connect'], function() {
     livereload.listen();
 
     gulp.watch([
-        'app/*.html',
-        'app/styles/**/*.css',
-        'app/scripts/**/*.js',
-        'app/scripts/**/*.jsx',
-        'app/images/**/*'
+        'src/*.html',
+        'src/styles/**/*.css',
+        'src/scripts/**/*.js',
+        'src/scripts/**/*.jsx',
+        'src/images/**/*'
     ]).on('change', livereload.changed);
 
 
 
-    gulp.watch('app/styles/**/*.less', ['styles']);
+    gulp.watch('src/styles/**/*.less', ['styles']);
 });
 
 
@@ -121,7 +121,7 @@ gulp.task('build', ['styles'], function() {
     gulp.start('browserify');
 
     /* app */
-    gulp.src('app/**/*')
+    gulp.src('src/**/*')
         .pipe(gulp.dest('dist'))
         .pipe(size({
             title: 'build',
