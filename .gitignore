@@ -1,2 +1,4 @@
 
 *.swp
+jhj-demo/node_modules/*
+react-demo/node_modules/*
