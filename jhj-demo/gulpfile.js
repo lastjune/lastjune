@@ -24,6 +24,18 @@ function swallowError(error){
     gutil.log(error.message);
     this.emit('end');
 }
+/* static files need to move to dist folder*/
+var filesToMove = [
+        './src/*.html',
+        './src/*.ico'
+    ];
+
+gulp.task('move', function(){
+  // the base option sets the relative root for the set of files,
+  // preserving the folder structure
+  gulp.src(filesToMove, { base: './' })
+  .pipe(gulp.dest('dist'));
+});
 /* browserify */
 gulp.task('browserify', function() {
 
@@ -41,12 +53,12 @@ gulp.task('browserify', function() {
             watcher.bundle()
                 .pipe(source('app.js'))
                 // This is where you add uglifying etc.
-                .pipe(gulp.dest('./src/scripts/'));
+                .pipe(gulp.dest('./dist/scripts/'));
             console.log('Updated!', (Date.now() - updateStart) + 'ms');
         })
         .bundle() // Create the initial bundle when starting the task
         .pipe(source('app.js'))
-        .pipe(gulp.dest('./src/scripts/'));
+        .pipe(gulp.dest('./dist/scripts/'));
 });
 
 /* styles */
@@ -60,7 +72,7 @@ gulp.task('styles', function() {
         .pipe(autoprefixer({
             browsers: ['last 1 version']
         }))
-        .pipe(gulp.dest('src/styles'));
+        .pipe(gulp.dest('dist/styles'));
 
 });
 
@@ -80,8 +92,8 @@ gulp.task('connect', ['styles', 'browserify'], function() {
         .use(require('connect-livereload')({
             port: 35729
         }))
-        .use(serveStatic('src'))
-        .use(serveIndex('src'));
+        .use(serveStatic('dist'))
+        .use(serveIndex('dist'));
 
     require('http').createServer(app)
         .listen(9005)
@@ -117,7 +129,7 @@ gulp.task('watch', ['connect'], function() {
 
 
 /* build */
-gulp.task('build', ['styles'], function() {
+gulp.task('build', ['styles','move'], function() {
     gulp.start('browserify');
 
     /* app */
@@ -134,7 +146,7 @@ gulp.task('build', ['styles'], function() {
         spare: true,
         quotes: true
     };
-    gulp.src('dist/*.html')
+    gulp.src('src/*.html')
         .pipe(minifyHtml(opts))
         .pipe(gulp.dest('dist'));
 });

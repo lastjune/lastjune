@@ -2,13 +2,15 @@
 
 var React=require('react');
 var mui=require('material-ui');
+
 var Dialog=mui.Dialog,TextField=mui.TextField,FlatButton=mui.FlatButton;
 var $=require('jquery');
-var ThemeManager =  mui.Styles.ThemeManager;
+var ThemeManager =  require('material-ui/lib/styles/theme-manager');
+var MyRawTheme = require('../styles/myRawTheme');
 var LoginForm=React.createClass({
     getChildContext:function(){
         return {
-            muiTheme: ThemeManager.getCurrentTheme()
+            muiTheme: ThemeManager.getMuiTheme(MyRawTheme)
         }
     },
     submit:function(){

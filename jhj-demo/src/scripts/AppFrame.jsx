@@ -2,26 +2,27 @@
 
 var React=require('react');
 var mui=require('material-ui');
-//var ThemeManager =  mui.Styles.ThemeManager;
+var ThemeManager =  require('material-ui/lib/styles/theme-manager');
+var MyRawTheme = require('../styles/myRawTheme');
 var Toolbar=mui.Toolbar,ToolbarGroup=mui.ToolbarGroup,DropDownMenu=mui.DropDownMenu,ToolbarTitle=mui.ToolbarTitle,FontIcon=mui.FontIcon,ToolbarSeparator=mui.ToolbarSeparator,RaisedButton=mui.RaisedButton,DropDownIcon=mui.DropDownIcon,LeftNav=mui.LeftNav,Paper=mui.Paper,AppCanvas=mui.AppCanvas,List=mui.List,ListItem=mui.ListItem,Tab=mui.Tab,Tabs=mui.Tabs,FlatButton=mui.FlatButton,ListDivider=mui.ListDivider,Table=mui.Table,TableColumn=mui.TableColumn,TableFooter=mui.TableFooter,TableRow=mui.TableRow,TableBody=mui.TableBody,TableRowColumn=mui.TableRowColumn,TableHeader=mui.TableHeader,TableHeaderColumn=mui.TableHeaderColumn;
 var AppFrame=React.createClass({
-    //getChildContext:function(){
-        //return {
-            //muiTheme: ThemeManager.getCurrentTheme()
-        //}
-    //},
+    getChildContext:function(){
+        return {
+            muiTheme: ThemeManager.getMuiTheme(MyRawTheme)
+        }
+    },
     getInitialState:function(){
-return  {state:{
-  fixedHeader: true,
-  fixedFooter: true,
-  stripedRows: false,
-  showRowHover: false,
-  selectable: true,
-  multiSelectable: false,
-  enableSelectAll: false,
-  deselectOnClickaway: true,
-  height: '300px'}
-};
+        return  {state:{
+          fixedHeader: true,
+          fixedFooter: true,
+          stripedRows: false,
+          showRowHover: false,
+          selectable: true,
+          multiSelectable: false,
+          enableSelectAll: false,
+          deselectOnClickaway: true,
+          height: '300px'}
+        };
     },
     tabs:[],
     componentWillMount:function() {
