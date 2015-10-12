@@ -1,3 +1,4 @@
 node_modules/*
 src/styles/*.css
 dist
+src/scripts/app.js
