@@ -41,7 +41,7 @@ var leftMenuItems = [
   },
 ];
 var st={position:"relative",height:64,backgroundColor:"#f3f3f4",display:"block"};
-var tables=[{primaryText:"系统维护",initiallyOpen:true,tableName:"sample1",children:[{primaryText:"功能权限管理",initiallyOpen:false,tableName:"sample2",children:null}]},{primaryText:"系统维护2",initiallyOpen:true,tableName:"sample3",children:[{primaryText:"功能权限管理",initiallyOpen:false,tableName:"sample3",children:null},{primaryText:"功能权限管理2",initiallyOpen:false,tableName:"sample4",children:null}]}];
+var tables=[{primaryText:"会员管理",initiallyOpen:true,tableName:"sample1",children:[{primaryText:"功能权限管理",initiallyOpen:false,tableName:"sample2",children:null}]},{primaryText:"系统维护2",initiallyOpen:true,tableName:"sample3",children:[{primaryText:"功能权限管理",initiallyOpen:false,tableName:"sample3",children:null},{primaryText:"功能权限管理2",initiallyOpen:false,tableName:"sample4",children:null}]}];
 if($('#tree').length>0){
     React.render(<AppFrame filterOptions={filterOptions1} iconMenuItems={iconMenuItems} leftMenuItems={leftMenuItems} st={st} tables={tables}/>,document.getElementById('tree'));
 }

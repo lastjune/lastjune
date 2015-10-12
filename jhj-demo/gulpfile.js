@@ -16,25 +16,30 @@ var gulp = require('gulp'),
     minifyHtml = require('gulp-minify-html'),
     size = require('gulp-size'),
     serveStatic = require('serve-static'),
-    serveIndex = require('serve-index');
+    serveIndex = require('serve-index'),
+    clean=require('gulp-clean'),
+    rev=require('gulp-rev');
 var babelify = require("babelify");
 var gutil=require('gulp-util');
-
+var buffer = require('gulp-buffer');
 function swallowError(error){
     gutil.log(error.message);
     this.emit('end');
 }
 /* static files need to move to dist folder*/
 var filesToMove = [
-        './src/*.html',
-        './src/*.ico'
+        'src/*.ico'
     ];
-
+var vendorCssToMove = [
+        'src/styles/vendor/*.css'
+    ];
 gulp.task('move', function(){
   // the base option sets the relative root for the set of files,
   // preserving the folder structure
-  gulp.src(filesToMove, { base: './' })
-  .pipe(gulp.dest('dist'));
+  gulp.src(filesToMove)
+  .pipe(gulp.dest('dist/'));
+  gulp.src(vendorCssToMove,{basedir:'./'})
+  .pipe(gulp.dest('dist/styles/vendor'));
 });
 /* browserify */
 gulp.task('browserify', function() {
@@ -51,19 +56,55 @@ gulp.task('browserify', function() {
             var updateStart = Date.now();
             console.log('Updating!');
             watcher.bundle()
-                .pipe(source('app.js'))
-                // This is where you add uglifying etc.
-                .pipe(gulp.dest('./dist/scripts/'));
+            .on('error',function(err){
+                gutil.log(err.message);
+                this.emit('end');
+            })
+            .pipe(source('app.js'))
+            .on('error',function(err){
+                console.log(err.message);
+            })
+            .pipe(gulp.dest('src/scripts/'))
+            .pipe(buffer())
+            .pipe(rev())
+            // This is where you add uglifying etc.
+            .pipe(gulp.dest('dist/scripts/'))
+            .pipe(livereload())
+            .pipe(rev.manifest({
+                path:"dist/rev-manifest.json",
+                merge:true,
+                base:'./dist'
+            }))
+            .pipe(gulp.dest('./dist'));
             console.log('Updated!', (Date.now() - updateStart) + 'ms');
         })
         .bundle() // Create the initial bundle when starting the task
+        .on('error',function(err){
+            gutil.log(err.message);
+            this.emit('end');
+        })
         .pipe(source('app.js'))
-        .pipe(gulp.dest('./dist/scripts/'));
+        .on('error',function(err){
+            gutil.log(err.message);
+            this.emit('end');
+        })
+        .pipe(gulp.dest('.src/scripts/'))
+        .pipe(buffer())
+        .pipe(rev())
+        .pipe(gulp.dest('dist/scripts/'))
+        .pipe(livereload())
+        .pipe(rev.manifest({
+            path:"dist/rev-manifest.json",
+            merge:true,
+            base:'./dist'
+        }))
+        .pipe(gulp.dest('./dist'));
 });
 
 /* styles */
 gulp.task('styles', function() {
-    return gulp.src('./src/styles/main.less')
+    console.log('start compile less file...');
+    return gulp.src('./src/styles/*.less')
         .pipe(plumber())
         .pipe(less({
             style: 'expanded',
@@ -72,8 +113,17 @@ gulp.task('styles', function() {
         .pipe(autoprefixer({
             browsers: ['last 1 version']
         }))
-        .pipe(gulp.dest('dist/styles'));
-
+        //.pipe(gulp.dest('src/styles'))
+        .pipe(rev())
+        .pipe(gulp.dest('dist/styles'))
+        .pipe(livereload())
+        .pipe(rev.manifest({
+            path:"dist/rev-manifest.json",
+            merge:'true',
+            base:'./dist/'
+        }))
+        .pipe(gulp.dest('./dist/'));
+    console.log('finish compile less file...');
 });
 
 
@@ -87,7 +137,7 @@ gulp.task('jshint', function() {
 
 
 /* connect */
-gulp.task('connect', ['styles', 'browserify'], function() {
+gulp.task('connect', ['rev','move'], function() {
     var app = connect()
         .use(require('connect-livereload')({
             port: 35729
@@ -119,11 +169,13 @@ gulp.task('watch', ['connect'], function() {
         'src/styles/**/*.css',
         'src/scripts/**/*.js',
         'src/scripts/**/*.jsx',
+        'dist/rev-manifest.json',
+        //'dist/*.html',
         'src/images/**/*'
-    ]).on('change', livereload.changed);
+    ]).on('change',livereload.changed);
 
 
-
+    gulp.watch('dist/rev-manifest.json',['compile-html']);
     gulp.watch('src/styles/**/*.less', ['styles']);
 });
 
@@ -154,4 +206,31 @@ gulp.task('build', ['styles','move'], function() {
 /* default */
 gulp.task('default', function() {
     gulp.start('serve');
+});
+
+var revCollector = require('gulp-rev-collector');
+
+gulp.task('rev',['styles','browserify'],function(){
+    return gulp.src(['dist/rev-manifest.json','src/*.html'])
+        .pipe( revCollector({
+            replaceReved: true
+        }))
+        .pipe( minifyHtml({
+                empty:true,
+                spare:true
+            }) )
+        .pipe( gulp.dest('dist') );
+});
+gulp.task('compile-html',function(){
+    console.log('start compile html');
+    return gulp.src(['dist/rev-manifest.json','src/*.html'])
+        .pipe( revCollector({ replaceReved: true }))
+        .pipe( gulp.dest('dist') )
+        .pipe(livereload());
+    console.log('finish compile html');
+});
+gulp.task('clean',function(){
+    return gulp.src('dist',{read:false})
+            .pipe(clean());
+
 });
