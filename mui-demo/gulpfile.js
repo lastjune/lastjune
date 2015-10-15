@@ -175,7 +175,7 @@ gulp.task('watch', ['connect'], function() {
     ]).on('change',livereload.changed);
 
 
-    gulp.watch('dist/rev-manifest.json',['compile-html']);
+    gulp.watch(['dist/rev-manifest.json','src/*html'],['compile-html']);
     gulp.watch('src/styles/**/*.less', ['styles']);
 });
 
@@ -232,5 +232,4 @@ gulp.task('compile-html',function(){
 gulp.task('clean',function(){
     return gulp.src('dist',{read:false})
             .pipe(clean());
-
 });
