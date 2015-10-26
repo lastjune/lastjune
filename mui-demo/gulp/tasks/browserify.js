@@ -1,34 +1,94 @@
-var gulp=require('gulp')
-    ,browseify=require('browserify');
+/* browserify task
+   ---------------
+   Bundle javascripty things with browserify!
+   This task is set up to generate multiple separate bundles, from
+   different sources, and to use Watchify when run from the default task.
+   See browserify.bundleConfigs in gulp/config.js
+*/
 
-gulp.task('browserify', function() {
+var browserify = require('browserify'),
+    watchify = require('watchify'),
+    bundleLogger = require('../util/bundleLogger'),
+    gulp = require('gulp'),
+    handleErrors = require('../util/handleErrors'),
+    source = require('vinyl-source-stream'),
+    config = require('../config'),
+    buffer = require('gulp-buffer'),
+    babelify = require('babelify'),
+    rev = require('gulp-rev');
 
-    var bundler = browserify( ['./app/scripts/main.js', './app/scripts/login.js']) // Only need initial file, browserify finds the deps
-        .transform(reactify)
-        .on('error',function(err){
-            gutil.log(err.message);
-            this.emit('end');
+gulp.task('browserify', function(callback) {
+
+    var bundleQueue = config.browserify.bundleConfigs.length;
+
+    var browserifyThis = function(bundleConfig) {
+
+        var bundler = browserify({
+            // Required watchify args
+            cache: {},
+            packageCache: {},
+            fullPaths: false,
+            // Specify the entry point of your app
+            entries: bundleConfig.entries,
+            // Add file extentions to make optional in your requires
+            extensions: config.browserify.extensions,
+            // Enable source maps!
+            debug: config.browserify.debug
         });
-    var watcher = watchify(bundler);
-    return watcher
-        .on('update', function() { // When any files updates
-            var updateStart = Date.now();
-            console.log('Updating!');
-            watcher.bundle()
-                .pipe(source('app.js'))
-                // This is where you add uglifying etc.
-                .pipe(gulp.dest('./app/scripts/'));
-            console.log('Updated!', (Date.now() - updateStart) + 'ms');
-        })
-        .bundle() // Create the initial bundle when starting the task
-        .on('error',function(err){
-            gutil.log(err.message);
-            this.emit('end');
-        });
-        .pipe(source('app.js'))
-        .on('error',function(err){
-            gutil.log(err.message);
-            this.emit('end');
-        });
-        .pipe(gulp.dest('./app/scripts/'));
+
+        var bundle = function() {
+            // Log when bundling starts
+            bundleLogger.start(bundleConfig.outputName);
+
+            return bundler
+                .bundle()
+                // Report compile errors
+                .on('error', handleErrors)
+                // Use vinyl-source-stream to make the
+                // stream gulp compatible. Specifiy the
+                // desired output filename here.
+                .pipe(source(bundleConfig.outputName))
+                .pipe(buffer())
+                .pipe(rev())
+                .pipe(gulp.dest(bundleConfig.dest))
+                .pipe(rev.manifest({
+                    path: config.rev.revPath,
+                    merge: true,
+                    base: config.rev.jsonDest
+                }))
+                .pipe(gulp.dest(config.rev.jsonDest))
+                // Specify the output destination
+                .on('end', reportFinished);
+        };
+
+        bundler.transform(babelify.configure({
+            stage: 1
+        }));
+
+        if (global.isWatching) {
+            // Wrap with watchify and rebundle on changes
+            bundler = watchify(bundler);
+            // Rebundle on update
+            bundler.on('update', bundle);
+        }
+
+        var reportFinished = function() {
+            // Log when bundling completes
+            bundleLogger.end(bundleConfig.outputName);
+
+            if (bundleQueue) {
+                bundleQueue--;
+                if (bundleQueue === 0) {
+                    // If queue is empty, tell gulp the task is complete.
+                    // https://github.com/gulpjs/gulp/blob/master/docs/API.md#accept-a-callback
+                    callback();
+                }
+            }
+        };
+
+        return bundle();
+    };
+
+    // Start bundling with Browserify for each bundleConfig specified
+    config.browserify.bundleConfigs.forEach(browserifyThis);
 });
