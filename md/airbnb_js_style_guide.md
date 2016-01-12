@@ -843,211 +843,221 @@ const变量写一起，let变量协一起。
 更多关于JavaScript作用域以及自上升的信息请参考[JavaScript Scoping & Hoisting](http://www.adequatelygood.com/JavaScript-Scoping-and-Hoisting.html) by Ben Cherry.
 
 ##Comparison Operators & Equality
-- 15.1 Use  ===  and  !==  over  ==  and  != .Undefined evaluates to falseNull evaluates to falseBooleans evaluate to the value of the booleanNumbers evaluate to false if +0, -0, or NaN, otherwise true
-- 15.2 Conditional statements such as the  if  statement evaluate their expression using coercion with the  ToBoolean  abstract method and always follow these simple rules:
-- eslint rules:  eqeqeq .
-- Objects evaluate to true
-- Strings evaluate to false if an empty string  '' , otherwise true
-- if ([0]) {
-  // true
-  // An array is an object, objects evaluate to true
-}
-- 15.3 Use shortcuts.
-- // bad
-if (name !== '') {
-  // ...stuff...
-}
+使用===与!==做比较
+条件表达式如`if`会调用`ToBoolean`这个抽象方法来做强制转换,遵循以下这个转换原则:   
+`Objects` 计算结果为 `true`   
+空字符串''计算结果为`false`，非空字符串计算为`true`   
++0,-0,NaN计算为`false` 关于+0，-0的比较可以参考我的博客   
+eslint rules:  eqeqeq .
 
-// good
-if (name) {
-  // ...stuff...
-}
+    if ([0]) {
+      // true
+      // An array is an object, objects evaluate to true
+    }
 
-// bad
-if (collection.length > 0) {
-  // ...stuff...
-}
+在做比较时，使用简写
 
-// good
-if (collection.length) {
-  // ...stuff...
-}
-- 15.4 For more information see Truth Equality and JavaScript by Angus Croll.
-⬆ back to top
+    // bad
+    if (name !== '') {
+        // ...stuff...
+    }
+
+    // good
+    if (name) {
+        // ...stuff...
+    }
+
+    // bad
+    if (collection.length > 0) {
+        // ...stuff...
+    }
+
+    // good
+    if (collection.length) {
+        // ...stuff...
+    }
+
+关于判断的真假值问题，更多的信息请参考由[Angus Croll](https://github.com/angus-c/)的文章[Truth Equality and JavaScript](https://javascriptweblog.wordpress.com/2011/02/07/truth-equality-and-javascript/#more-2108)
 
 ##Blocks
-- 16.1 Use braces with all multi-line blocks.
-- // bad
-if (test)
-  return false;
+多行区块使用括号
 
-// good
-if (test) return false;
+    // bad
+    if (test)
+        return false;
 
-// good
-if (test) {
-  return false;
-}
+    // good
+    if (test) return false;
 
-// bad
-function () { return false; }
+    // good
+    if (test) {
+        return false;
+    }
 
-// good
-function () {
-  return false;
-}
-- 16.2 If you're using multi-line blocks with  if  and  else , put  else  on the same line as your  if  block's closing brace.
-- eslint rules:  brace-style .
-- // bad
-if (test) {
-  thing1();
-  thing2();
-}
-else {
-  thing3();
-}
+    // bad
+    function () { return false; }
 
-// good
-if (test) {
-  thing1();
-  thing2();
-} else {
-  thing3();
-}
-⬆ back to top
+    // good
+    function () {
+        return false;
+    }
+
+如果你使用`if`和`else`在多行区块内，将else放在if区块结束`}`后面
+eslint rules:  brace-style .
+
+    // bad
+    if (test) {
+        thing1();
+        thing2();
+    }
+    else {
+        thing3();
+    }
+
+    // good
+    if (test) {
+        thing1();
+        thing2();
+    } else {
+        thing3();
+    }
 
 ##Comments
-- 17.1 Use  /** ... */  for multi-line comments. Include a description, specify types and values for all parameters and return values.
-- // bad
-// make() returns a new element
-// based on the passed in tag name
-//
-// @param {String} tag
-// @return {Element} element
-function make(tag) {
+多行注释使用/\*\*.../   
 
-  // ...stuff...
+    // bad
+    // make() returns a new element
+    // based on the passed in tag name
+    //
+    // @param {String} tag
+    // @return {Element} element
+    function make(tag) {
+        // ...stuff...
 
-  return element;
-}
+        return element;
+    }
 
-// good
-/**
-* make() returns a new element
-* based on the passed in tag name
-*
-* @param {String} tag
-* @return {Element} element
-*/
-function make(tag) {
+    // good
+    /**
+     * make() returns a new element
+     * based on the passed in tag name
+     *
+     * @param {String} tag
+     * @return {Element} element
+     */
+    function make(tag) {
+        // ...stuff...
 
-  // ...stuff...
+        return element;
+    }
+    
+使用//做单行注释,注释独立成行,注释写被注释内容的上方,并且在注释的上方留一个空行，除非是第一行，则不用留空行
 
-  return element;
-}
-- 17.2 Use  //  for single line comments. Place single line comments on a newline above the subject of the comment. Put an empty line before the comment unless it's on the first line of a block.
-- // bad
-const active = true;  // is current tab
+    // bad
+    const active = true;  // is current tab
 
-// good
-// is current tab
-const active = true;
+    // good
+    // is current tab
+    const active = true;
 
-// bad
-function getType() {
-  console.log('fetching type...');
-  // set the default type to 'no type'
-  const type = this._type || 'no type';
+    // bad
+    function getType() {
+        console.log('fetching type...');
+        // set the default type to 'no type'
+        const type = this._type || 'no type';
 
-  return type;
-}
+        return type;
+    }
 
-// good
-function getType() {
-  console.log('fetching type...');
+    // good
+    function getType() {
+        console.log('fetching type...');
 
-  // set the default type to 'no type'
-  const type = this._type || 'no type';
+        // set the default type to 'no type'
+        const type = this._type || 'no type';
 
-  return type;
-}
+        return type;
+    }
 
-// also good
-function getType() {
-  // set the default type to 'no type'
-  const type = this._type || 'no type';
+    // also good
+    function getType() {
+        // set the default type to 'no type'
+        const type = this._type || 'no type';
 
-  return type;
-}
+        return type;
+    }
+
 - 17.3 Prefixing your comments with  FIXME  or  TODO  helps other developers quickly understand if you're pointing out a problem that needs to be revisited, or if you're suggesting a solution to the problem that needs to be implemented. These are different than regular comments because they are actionable. The actions are  FIXME -- need to figure this out  or  TODO -- need to implement .
-- 17.4 Use  // FIXME:  to annotate problems.
-- class Calculator extends Abacus {
-  constructor() {
-    super();
+在注释中使用`FIXME`和`TODO`来标注详细信息，这样有助于其他人员迅速的理解代码
+使用`// FIXME:  to annotate problems.`来标注问题或者bug
 
-    // FIXME: shouldn't use a global here
-    total = 0;
-  }
-}
-- 17.5 Use  // TODO:  to annotate solutions to problems.
-- class Calculator extends Abacus {
-  constructor() {
-    super();
+    class Calculator extends Abacus {
+        constructor() {
+            super();
 
-    // TODO: total should be configurable by an options param
-    this.total = 0;
-  }
-}
-⬆ back to top
+            // FIXME: shouldn't use a global here
+            total = 0;
+        }
+    }
+
+使用`// TODO:  to annotate solutions to problems.`来标注解决方案或者待实现内容
+
+    class Calculator extends Abacus {
+        constructor() {
+            super();
+
+            // TODO: total should be configurable by an options param
+            this.total = 0;
+        }
+    }
 
 ##Whitespace
-- 18.1 Use soft tabs set to 2 spaces.
-- eslint rules:  indent .
+使用4个空格（原文为2个空格）做缩进，我一直使用的4个空格做缩进。。。,包括在翻译本文的时候的事例代码的缩进全部使用的4个空格
+不过这应该只是一种代码格式的风格，大家可以自行选择
+eslint rules:  indent .
 
--
-  // bad
-  function () {
-  ∙∙∙∙const name;
-  }
+    // bad
+    function () {
+    ∙∙∙∙const name;
+    }
 
-  // bad
-  function () {
-  ∙const name;
-  }
+    // bad
+    function () {
+    ∙const name;
+    }
 
-  // good
-  function () {
-  ∙∙const name;
-  }
-- 18.2 Place 1 space before the leading brace.
-- eslint rules:  space-before-blocks .
+    // good
+    function () {
+    ∙∙const name;
+    }
+开始的括号前插入一个空格
+eslint rules:  space-before-blocks .
 
--
-  // bad
-  function test(){
-    console.log('test');
-  }
+    // bad
+    function test(){
+        console.log('test');
+    }
 
-  // good
-  function test() {
-    console.log('test');
-  }
+    // good
+    function test() {
+        console.log('test');
+    }
 
-  // bad
-  dog.set('attr',{
-    age: '1 year',
-    breed: 'Bernese Mountain Dog',
-  });
+    // bad
+    dog.set('attr',{
+        age: '1 year',
+        breed: 'Bernese Mountain Dog',
+    });
 
-  // good
-  dog.set('attr', {
-    age: '1 year',
-    breed: 'Bernese Mountain Dog',
-  });
-- 18.3 Place 1 space before the opening parenthesis in control statements ( if ,  while  etc.). Place no space before the argument list in function calls and declarations.
-- eslint rules:  space-after-keywords ,  space-before-keywords .
+    // good
+    dog.set('attr', {
+        age: '1 year',
+        breed: 'Bernese Mountain Dog',
+    });
 
--
+`if while`等括号开始前加一个空格,函数的调用跟声明的时候不要再参数列表之前加空格
+eslint rules:  space-after-keywords ,  space-before-keywords .
+
   // bad
   if(isJedi) {
     fight ();
@@ -1067,455 +1077,481 @@ function getType() {
   function fight() {
     console.log('Swooosh!');
   }
-- 18.4 Set off operators with spaces.
-- eslint rules:  space-infix-ops .
 
--
-  // bad
-  const x=y+5;
+操作符加前后空格
+eslint rules:  space-infix-ops .
 
-  // good
-  const x = y + 5;
-- 18.5 End files with a single newline character.
-- // bad
-(function (global) {
-  // ...stuff...
-})(this);
-- // bad
-(function (global) {
-  // ...stuff...
-})(this);↵
-↵
-- // good
-(function (global) {
-  // ...stuff...
-})(this);↵
-- 18.6 Use indentation when making long method chains. Use a leading dot, which emphasizes that the line is a method call, not a new statement.
-- // bad
-$('#items').find('.selected').highlight().end().find('.open').updateCount();
+    // bad
+    const x=y+5;
 
-// bad
-$('#items').
-  find('.selected').
-    highlight().
-    end().
-  find('.open').
-    updateCount();
+    // good
+    const x = y + 5;
 
-// good
-$('#items')
-  .find('.selected')
-    .highlight()
-    .end()
-  .find('.open')
-    .updateCount();
+文件结尾处加一个换行符,不要加一个空行
 
-// bad
-const leds = stage.selectAll('.led').data(data).enter().append('svg:svg').class('led', true)
-    .attr('width', (radius + margin) * 2).append('svg:g')
-    .attr('transform', 'translate(' + (radius + margin) + ',' + (radius + margin) + ')')
-    .call(tron.led);
+    // bad
+    (function (global) {
+        // ...stuff...
+    })(this);
+    // bad
+    (function (global) {
+        // ...stuff...
+    })(this);↵
+    ↵
+    // good
+    (function (global) {
+        // ...stuff...
+    })(this);↵
 
-// good
-const leds = stage.selectAll('.led')
-    .data(data)
-  .enter().append('svg:svg')
-    .classed('led', true)
-    .attr('width', (radius + margin) * 2)
-  .append('svg:g')
-    .attr('transform', 'translate(' + (radius + margin) + ',' + (radius + margin) + ')')
-    .call(tron.led);
-- 18.7 Leave a blank line after blocks and before the next statement.
-- // bad
-if (foo) {
-  return bar;
-}
-return baz;
+当有一个很长的链式调用时，使用.号开头做缩进
 
-// good
-if (foo) {
-  return bar;
-}
+    // bad
+    $('#items').find('.selected').highlight().end().find('.open').updateCount();
 
-return baz;
+    // bad
+    $('#items').
+      find('.selected').
+        highlight().
+        end().
+      find('.open').
+        updateCount();
 
-// bad
-const obj = {
-  foo() {
-  },
-  bar() {
-  },
-};
-return obj;
+    // good
+    $('#items')
+      .find('.selected')
+        .highlight()
+        .end()
+      .find('.open')
+        .updateCount();
 
-// good
-const obj = {
-  foo() {
-  },
+    // bad
+    const leds = stage.selectAll('.led').data(data).enter().append('svg:svg').class('led', true)
+        .attr('width', (radius + margin) * 2).append('svg:g')
+        .attr('transform', 'translate(' + (radius + margin) + ',' + (radius + margin) + ')')
+        .call(tron.led);
 
-  bar() {
-  },
-};
+    // good
+    const leds = stage.selectAll('.led')
+        .data(data)
+      .enter().append('svg:svg')
+        .classed('led', true)
+        .attr('width', (radius + margin) * 2)
+      .append('svg:g')
+        .attr('transform', 'translate(' + (radius + margin) + ',' + (radius + margin) + ')')
+        .call(tron.led);
 
-return obj;
+在块内容结束之后添加一个新行
 
-// bad
-const arr = [
-  function foo() {
-  },
-  function bar() {
-  },
-];
-return arr;
+    // bad
+    if (foo) {
+        return bar;
+    }
+    return baz;
 
-// good
-const arr = [
-  function foo() {
-  },
+    // good
+    if (foo) {
+        return bar;
+    }
 
-  function bar() {
-  },
-];
+    return baz;
 
-return arr;
-- 18.8 Do not pad your blocks with blank lines.
-- eslint rules:  padded-blocks .
+    // bad
+    const obj = {
+        foo() {
+        },
+        bar() {
+        },
+    };
+    return obj;
 
--
-  // bad
-  function bar() {
+    // good
+    const obj = {
+        foo() {
+        },
 
-    console.log(foo);
+        bar() {
+        },
+    };
 
-  }
+    return obj;
 
-  // also bad
-  if (baz) {
+    // bad
+    const arr = [
+        function foo() {
+        },
+        function bar() {
+        },
+    ];
+    return arr;
 
-    console.log(qux);
-  } else {
-    console.log(foo);
+    // good
+    const arr = [
+        function foo() {
+        },
 
-  }
+        function bar() {
+        },
+    ];
 
-  // good
-  function bar() {
-    console.log(foo);
-  }
+    return arr;
 
-  // good
-  if (baz) {
-    console.log(qux);
-  } else {
-    console.log(foo);
-  }
-- 18.9 Do not add spaces inside parentheses.
-- eslint rules:  space-in-parens .
+不要在区块代码内部填充空行
+eslint rules:  padded-blocks .
 
--
-  // bad
-  function bar( foo ) {
-    return foo;
-  }
+    // bad
+    function bar() {
 
-  // good
-  function bar(foo) {
-    return foo;
-  }
+        console.log(foo);
 
-  // bad
-  if ( foo ) {
-    console.log(foo);
-  }
+    }
 
-  // good
-  if (foo) {
-    console.log(foo);
-  }
-- 18.10 Do not add spaces inside brackets.
-- eslint rules:  array-bracket-spacing .
+    // also bad
+    if (baz) {
 
--
-  // bad
-  const foo = [ 1, 2, 3 ];
-  console.log(foo[ 0 ]);
+        console.log(qux);
+    } else {
+        console.log(foo);
+    }
 
-  // good
-  const foo = [1, 2, 3];
-  console.log(foo[0]);
-- 18.11 Add spaces inside curly braces.
-- eslint rules:  object-curly-spacing .
+    // good
+    function bar() {
+        console.log(foo);
+    }
 
--
-  // bad
-  const foo = {clark: 'kent'};
+    // good
+    if (baz) {
+        console.log(qux);
+    } else {
+        console.log(foo);
+    }
 
-  // good
-  const foo = { clark: 'kent' };
-⬆ back to top
+不要在小括号内部填充空格
+eslint rules:  space-in-parens .
+
+    // bad
+    function bar( foo ) {
+        return foo;
+    }
+
+    // good
+    function bar(foo) {
+        return foo;
+    }
+
+    // bad
+    if ( foo ) {
+        console.log(foo);
+    }
+
+    // good
+    if (foo) {
+        console.log(foo);
+    }
+
+不要在中括号内填充空格
+eslint rules:  array-bracket-spacing .
+
+    // bad
+    const foo = [ 1, 2, 3 ];
+    console.log(foo[ 0 ]);
+
+    // good
+    const foo = [1, 2, 3];
+    console.log(foo[0]);
+
+在大括号内部填充空格
+eslint rules:  object-curly-spacing .
+
+    // bad
+    const foo = {clark: 'kent'};
+
+    // good
+    const foo = { clark: 'kent' };
 
 ##Commas
-- 19.1 Leading commas: Nope.
-- eslint rules:  comma-style .
+逗号不要前置
+eslint rules:  comma-style .
 
--
-  // bad
-  const story = [
-      once
-    , upon
-    , aTime
-  ];
+    // bad
+    const story = [
+          once
+        , upon
+        , aTime
+    ];
 
-  // good
-  const story = [
-    once,
-    upon,
-    aTime,
-  ];
+    // good
+    const story = [
+        once,
+        upon,
+        aTime,
+    ];
 
-  // bad
-  const hero = {
-      firstName: 'Ada'
-    , lastName: 'Lovelace'
-    , birthYear: 1815
-    , superPower: 'computers'
-  };
+    // bad
+    const hero = {
+          firstName: 'Ada'
+        , lastName: 'Lovelace'
+        , birthYear: 1815
+        , superPower: 'computers'
+    };
 
-  // good
-  const hero = {
-    firstName: 'Ada',
-    lastName: 'Lovelace',
-    birthYear: 1815,
-    superPower: 'computers',
-  };
-- 19.2 Additional trailing comma: Yup.
-- eslint rules:  no-comma-dangle .
-- Why? This leads to cleaner git diffs. Also, transpilers like Babel will remove the additional trailing comma in the transpiled code which means you don't have to worry about the trailing comma problem in legacy browsers.
+    // good
+    const hero = {
+        firstName: 'Ada',
+        lastName: 'Lovelace',
+        birthYear: 1815,
+        superPower: 'computers',
+    };
 
--
-  // bad - git diff without trailing comma
-  const hero = {
+不要省略逗号,git diff 会显示这个省略的不同，不造成其他同事的困扰,你也不必担心，babel会自动将comma去掉，以便在一些老的浏览器中不会产生问题
+eslint rules:  no-comma-dangle .
+
+    // bad - git diff without trailing comma
+    const hero = {
       firstName: 'Florence',
-  -    lastName: 'Nightingale'
-  +    lastName: 'Nightingale',
-  +    inventorOf: ['coxcomb graph', 'modern nursing']
-  };
+    -    lastName: 'Nightingale'
+    +    lastName: 'Nightingale',
+    +    inventorOf: ['coxcomb graph', 'modern nursing']
+    };
 
-  // good - git diff with trailing comma
-  const hero = {
-      firstName: 'Florence',
-      lastName: 'Nightingale',
-  +    inventorOf: ['coxcomb chart', 'modern nursing'],
-  };
+    // good - git diff with trailing comma
+    const hero = {
+        firstName: 'Florence',
+        lastName: 'Nightingale',
+    +   inventorOf: ['coxcomb chart', 'modern nursing'],
+    };
 
-  // bad
-  const hero = {
-    firstName: 'Dana',
-    lastName: 'Scully'
-  };
+    // bad
+    const hero = {
+        firstName: 'Dana',
+        lastName: 'Scully'
+    };
 
-  const heroes = [
-    'Batman',
-    'Superman'
-  ];
+    const heroes = [
+        'Batman',
+        'Superman'
+    ];
 
-  // good
-  const hero = {
-    firstName: 'Dana',
-    lastName: 'Scully',
-  };
+    // good
+    const hero = {
+        firstName: 'Dana',
+        lastName: 'Scully',
+    };
 
-  const heroes = [
-    'Batman',
-    'Superman',
-  ];
-⬆ back to top
+    const heroes = [
+        'Batman',
+        'Superman',
+    ];
 
 ##Semicolons
-- 20.1 Yup.
-- eslint rules:  semi .
+不要省略分号
+eslint rules:  semi .
 
--
-  // bad
-  (function () {
-    const name = 'Skywalker'
-    return name
-  })()
+    // bad
+    (function () {
+        const name = 'Skywalker'
+        return name
+    })()
 
-  // good
-  (() => {
-    const name = 'Skywalker';
-    return name;
-  })();
+    // good
+    (() => {
+        const name = 'Skywalker';
+        return name;
+    })();
 
-  // good (guards against the function becoming an argument when two files with IIFEs are concatenated)
-  ;(() => {
-    const name = 'Skywalker';
-    return name;
-  })();
-- Read more.
-⬆ back to top
+    // good (guards against the function becoming an argument when two files with IIFEs are concatenated)
+    ;(() => {
+        const name = 'Skywalker';
+        return name;
+    })();
 
 ##Type Casting & Coercion
-- 21.1 Perform type coercion at the beginning of the statement.
+使用强制类型转换
 - 21.2 Strings:
-- //  => this.reviewScore = 9;
 
-// bad
-const totalScore = this.reviewScore + '';
+    //  => this.reviewScore = 9;
 
-// good
-const totalScore = String(this.reviewScore);
-- 21.3 Numbers: Use  Number  for type casting and  parseInt  always with a radix for parsing strings.
-- const inputValue = '4';
+    // bad
+    const totalScore = this.reviewScore + '';
 
-// bad
-const val = new Number(inputValue);
+    // good
+    const totalScore = String(this.reviewScore);
 
-// bad
-const val = +inputValue;
+- 21.3 Numbers: Use  Number  for type casting and  parseInt  always with a radix for parsing strings.使用`Number`做类型转换,使用`parseInt`配合进制来做转换
+eslint rules: radix.
 
-// bad
-const val = inputValue >> 0;
+    const inputValue = '4';
 
-// bad
-const val = parseInt(inputValue);
+    // bad
+    const val = new Number(inputValue);
 
-// good
-const val = Number(inputValue);
+    // bad
+    const val = +inputValue;
 
-// good
-const val = parseInt(inputValue, 10);
+    // bad
+    const val = inputValue >> 0;
+
+    // bad
+    const val = parseInt(inputValue);
+
+    // good
+    const val = Number(inputValue);
+
+
+    const inputValue= '16';
+
+    // good
+    const val = parseInt(inputValue, 10);//16
+
+    // good 
+    const val = parseInt(inputValue, 16);//22
+
 - 21.4 If for whatever reason you are doing something wild and  parseInt  is your bottleneck and need to use Bitshift for performance reasons, leave a comment explaining why and what you're doing.
-- // good
-/**
-* parseInt was the reason my code was slow.
-* Bitshifting the String to coerce it to a
-* Number made it a lot faster.
-*/
-const val = inputValue >> 0;
+有时在使用parseInt时会发现性能比较差，这是可以考虑使用Bitshift,参考[这里](http://jsperf.com/coercion-vs-casting/3)
+
+    // good
+    /**
+    * parseInt was the reason my code was slow.
+    * Bitshifting the String to coerce it to a
+    * Number made it a lot faster.
+    */
+    const val = inputValue >> 0;
+
 - 21.5 Note: Be careful when using bitshift operations. Numbers are represented as 64-bit values, but Bitshift operations always return a 32-bit integer (source). Bitshift can lead to unexpected behavior for integer values larger than 32 bits. Discussion. Largest signed 32-bit Int is 2,147,483,647:
-- 2147483647 >> 0 //=> 2147483647
-2147483648 >> 0 //=> -2147483648
-2147483649 >> 0 //=> -2147483647
-- 21.6 Booleans:
-- const age = 0;
+在使用bitshift时需要谨慎，数字类型是以64位，但是bitshift操作往往返回一个32位的整形，所以当对一个大于32位长度的数值使用bitshift时会产生一些不可预测的行为.
 
-// bad
-const hasAge = new Boolean(age);
+    2147483647 >> 0 //=> 2147483647
+    2147483648 >> 0 //=> -2147483648
+    2147483649 >> 0 //=> -2147483647
 
-// good
-const hasAge = Boolean(age);
+布尔类型
 
-// good
-const hasAge = !!age;
-⬆ back to top
+    const age = 0;
+
+    // bad
+    const hasAge = new Boolean(age);
+
+    // good
+    const hasAge = Boolean(age);
+
+    // good
+    const hasAge = !!age;
 
 ##Naming Conventions
-- 22.1 Avoid single letter names. Be descriptive with your naming.
-- // bad
-function q() {
-  // ...stuff...
-}
 
-// good
-function query() {
-  // ..stuff..
-}
-- 22.2 Use camelCase when naming objects, functions, and instances.
-- eslint rules:  camelcase .
+不要使用单个字符来命名变量或者函数
 
--
-  // bad
-  const OBJEcttsssss = {};
-  const this_is_my_object = {};
-  function c() {}
+    // bad
+    function q() {
+        // ...stuff...
+    }
 
-  // good
-  const thisIsMyObject = {};
-  function thisIsMyFunction() {}
-- 22.3 Use PascalCase when naming constructors or classes.
-- // bad
-function user(options) {
-  this.name = options.name;
-}
+    // good
+    function query() {
+        // ..stuff..
+    }
 
-const bad = new user({
-  name: 'nope',
-});
+使用驼峰式来命名对象，函数以及实例
+eslint rules:  camelcase .
 
-// good
-class User {
-  constructor(options) {
-    this.name = options.name;
-  }
-}
+    // bad
+    const OBJEcttsssss = {};
+    const this_is_my_object = {};
+    function c() {}
 
-const good = new User({
-  name: 'yup',
-});
-- 22.4 Use a leading underscore  _  when naming private properties.
-- eslint rules:  no-underscore-dangle .
+    // good
+    const thisIsMyObject = {};
+    function thisIsMyFunction() {}
 
--
-  // bad
-  this.__firstName__ = 'Panda';
-  this.firstName_ = 'Panda';
+使用PascalCase来命名构造器和类
 
-  // good
-  this._firstName = 'Panda';
-- 22.5 Don't save references to  this . Use arrow functions or Function#bind.
-- // bad
-function foo() {
-  const self = this;
-  return function () {
-    console.log(self);
-  };
-}
+    // bad
+    function user(options) {
+        this.name = options.name;
+    }
 
-// bad
-function foo() {
-  const that = this;
-  return function () {
-    console.log(that);
-  };
-}
+    const bad = new user({
+        name: 'nope',
+    });
 
-// good
-function foo() {
-  return () => {
-    console.log(this);
-  };
-}
-- 22.6 If your file exports a single class, your filename should be exactly the name of the class.
-- // file contents
-class CheckBox {
-  // ...
-}
-export default CheckBox;
+    // good
+    class User {
+        constructor(options) {
+            this.name = options.name;
+        }
+    }
 
-// in some other file
-// bad
-import CheckBox from './checkBox';
+    const good = new User({
+        name: 'yup',
+    });
 
-// bad
-import CheckBox from './check_box';
+对私有属性加\_
+eslint rules:  no-underscore-dangle .
 
-// good
-import CheckBox from './CheckBox';
-- 22.7 Use camelCase when you export-default a function. Your filename should be identical to your function's name.
-- function makeStyleGuide() {
-}
+    // bad
+    this.__firstName__ = 'Panda';
+    this.firstName_ = 'Panda';
 
-export default makeStyleGuide;
-- 22.8 Use PascalCase when you export a singleton / function library / bare object.
-- const AirbnbStyleGuide = {
-  es6: {
-  }
-};
+    // good
+    this._firstName = 'Panda';
 
-export default AirbnbStyleGuide;
-⬆ back to top
+不要赋值对`this`的引用,使用箭头函数或者Function#bind方法
+
+    // bad
+    function foo() {
+        const self = this;
+        return function () {
+            console.log(self);
+        };
+    }
+
+    // bad
+    function foo() {
+        const that = this;
+        return function () {
+            console.log(that);
+        };
+    }
+
+    // good
+    function foo() {
+        return () => {
+            console.log(this);
+        };
+    }
+
+如果文件只包含一个类，文件名必须与类名相同
+
+    // file contents
+    class CheckBox {
+        // ...
+    }
+    export default CheckBox;
+
+    // in some other file
+    // bad
+    import CheckBox from './checkBox';
+
+    // bad
+    import CheckBox from './check_box';
+
+    // good
+    import CheckBox from './CheckBox';
+
+当使用默认导出一个函数式，文件名需要与函数名相同,使用驼峰式命名
+
+    function makeStyleGuide() {
+    }
+
+    export default makeStyleGuide;
+
+当导出的是一个单例/工厂类/空对象时,当使用PascaalCase的命名方式
+
+    const AirbnbStyleGuide = {
+        es6: {
+        }
+    };
+
+    export default AirbnbStyleGuide;
 
 ##Accessors
 - 23.1 Accessor functions for properties are not required.
