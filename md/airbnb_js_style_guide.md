@@ -372,7 +372,7 @@ __ECMA-262中定义了一份此类区块内的声明清单,声明函数不在其
         return args.join('');
     }
 
-使用默认参数，不要使用模拟的条件参数，这样真的非常糟糕
+使用默认参数，不要定义了参数，而又在函数内部区判断该参数是否传入，这样真的非常糟糕
 
     function handleThings(opts) {
         // No! We shouldn't mutate function arguments.
@@ -395,50 +395,45 @@ __ECMA-262中定义了一份此类区块内的声明清单,声明函数不在其
         // ...
     }
 
-- 7.8 Avoid side effects with default parameters.
-- Why? They are confusing to reason about.
-- var b = 1;
-// bad
-function count(a = b++) {
-  console.log(a);
-}
-count();  // 1
-count();  // 2
-count(3); // 3
-count();  // 3
-- 7.9 Always put default parameters last.
+要注意默认参数的边际效应,会让人迷惑，如下代码例子：
 
--
+    var b = 1;
+    // bad
+    function count(a = b++) {
+      console.log(a);
+    }
+    count();  // 1
+    count();  // 2
+    count(3); // 3
+    count();  // 3
+
 将默认参数放在最后
-// bad
-function handleThings(opts = {}, name) {
-  // ...
-}
 
-// good
-function handleThings(name, opts = {}) {
-  // ...
-}
-- 7.10 Never use the Function constructor to create a new function.
-- Why? Creating a function in this way evaluates a string similarly to eval(), which opens vulnerabilities.
-- 不要通过new一个函数构造器来创建新的函数，这会产生严重的代码危害性。
-// bad
-var add = new Function('a', 'b', 'return a + b');
-// still bad
-var subtract = Function('a', 'b', 'return a - b');
+    // bad
+    function handleThings(opts = {}, name) {
+        // ...
+    }
 
-- 7.11 Spacing in a function signature.
-- Why? Consistency is good, and you shouldn’t have to add or remove a space when adding or removing a name.
-- 方法签名处的空格非常重要。有助于代码格式的统一，而且你不必再添加或者删除姓名时添加删除空格。
-- // bad
-const f = function(){};
-const g = function (){};
-const h = function() {};
-// good
-const x = function () {};
-const y = function a() {};
+    // good
+    function handleThings(name, opts = {}) {
+        // ...
+    }
 
-⬆ back to top
+不要通过new一个函数构造器来创建新的函数，这会产生严重的代码危害性。
+
+    // bad
+    var add = new Function('a', 'b', 'return a + b');
+    // still bad
+    var subtract = Function('a', 'b', 'return a - b');
+
+方法签名处的空格非常重要。有助于代码格式的统一，而且你不必再添加或者删除姓名时添加删除空格。
+    // bad
+    const f = function(){};
+    const g = function (){};
+    const h = function() {};
+    // good
+    const x = function () {};
+    const y = function a() {};
 
 ##Arrow Functions
 - 8.1 When you must use function expressions (as when passing an anonymous function), use arrow function notation.
