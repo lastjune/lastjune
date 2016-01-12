@@ -395,7 +395,7 @@ __ECMA-262中定义了一份此类区块内的声明清单,声明函数不在其
         // ...
     }
 
-要注意默认参数的边际效应,会让人迷惑，如下代码例子：
+要注意默认参数可能会带来的副作用,有时会会让人迷惑，如下代码例子：
 
     var b = 1;
     // bad
@@ -436,445 +436,411 @@ __ECMA-262中定义了一份此类区块内的声明清单,声明函数不在其
     const y = function a() {};
 
 ##Arrow Functions
-- 8.1 When you must use function expressions (as when passing an anonymous function), use arrow function notation.
-- Why? It creates a version of the function that executes in the context of  this , which is usually what you want, and is a more concise syntax.
-- Why not? If you have a fairly complicated function, you might move that logic out into its own function declaration.
-- 当需要使用方法表达式时，比如需要传第一个匿名方法参数时，使用箭头函数语法。
-- 箭头函数会创建一个在this上下文中的函数版本，通常这样更便于我们的使用，而且语法上也会更加精简。
+当需要使用方法表达式时，比如需要传第一个匿名方法参数时，使用箭头函数语法。
+箭头函数会创建一个在this上下文中的函数版本，通常这样更便于我们的使用，而且语法上也会更加精简。
+eslint rules:  prefer-arrow-callback ,  arrow-spacing .
 
-- eslint rules:  prefer-arrow-callback ,  arrow-spacing .
+    // bad
+    [1, 2, 3].map(function (x) {
+        const y = x + 1;
+        return x * y;
+    });
 
--
-  // bad
-  [1, 2, 3].map(function (x) {
-    const y = x + 1;
-    return x * y;
-  });
+    // good
+    [1, 2, 3].map((x) => {
+        const y = x + 1;
+        return x * y;
+    });
 
-  // good
-  [1, 2, 3].map((x) => {
-    const y = x + 1;
-    return x * y;
-  });
-- 8.2 If the function body consists of a single expression, feel free to omit the braces and use the implicit return. Otherwise use a  return  statement.
-- Why? Syntactic sugar. It reads well when multiple functions are chained together.
-Why not? If you plan on returning an object.
-- 如果箭头函数只有一条表达式，可以忽略return。
-- 而当有多行代码时，return不可忽略，否则会返回一个对象。
-- eslint rules:  arrow-parens ,  arrow-body-style .
+如果箭头函数只有一条表达式，可以忽略return。而当有多行代码时，return不可忽略，否则会返回一个对象。
+eslint rules:  arrow-parens ,  arrow-body-style.
 
--
-  // good
-  [1, 2, 3].map(number => `A string containing the ${number}.`);
+    // good
+    [1, 2, 3].map(number => `A string containing the ${number}.`);
 
-  // bad
-  [1, 2, 3].map(number => {
-    const nextNumber = number + 1;
-    `A string containing the ${nextNumber}.`;
-  });
+    // bad
+    [1, 2, 3].map(number => {
+        const nextNumber = number + 1;
+        `A string containing the ${nextNumber}.`;
+    });
 
-  // good
-  [1, 2, 3].map(number => {
-    const nextNumber = number + 1;
-    return `A string containing the ${nextNumber}.`;
-  });
-- 8.3 In case the expression spans over multiple lines, wrap it in parentheses for better readability.
-- Why? It shows clearly where the function starts and ends.
-- 如果表达式过长（多行），使用小括号包起来。这样比较清晰。
-  // bad
--   [1, 2, 3].map(number => 'As time went by, the string containing the ' +
-    `${number} became much longer. So we needed to break it over multiple ` +
-    'lines.'
-  );
-  // good
-  [1, 2, 3].map(number => (
-    `As time went by, the string containing the ${number} became much ` +
-    'longer. So we needed to break it over multiple lines.'
-  ));
+    // good
+    [1, 2, 3].map(number => {
+        const nextNumber = number + 1;
+        return `A string containing the ${nextNumber}.`;
+    });
+    
+如果表达式过长（多行），使用小括号包起来。这样比较清晰。
 
-- 8.4 If your function only takes a single argument, feel free to omit the parentheses.
-- Why? Less visual clutter.
-- 如果只有一个参数，可以忽略函数签名的括号
-- eslint rules:  arrow-parens .
+    // bad
+    [1, 2, 3].map(number => 'As time went by, the string containing the ' +
+        `${number} became much longer. So we needed to break it over multiple ` +
+        'lines.'
+    );
 
--
-  // good
-  [1, 2, 3].map(x => x * x);
+    // good
+    [1, 2, 3].map(number => (
+        `As time went by, the string containing the ${number} became much ` +
+        'longer. So we needed to break it over multiple lines.'
+    ));
 
-  // good
-  [1, 2, 3].reduce((y, x) => x + y);
-⬆ back to top
+如果只有一个参数，可以省略函数签名的括号   
+eslint rules:  arrow-parens .
+
+    // good
+    [1, 2, 3].map(x => x * x);
+
+    // good
+    [1, 2, 3].reduce((y, x) => x + y);
 
 ##Constructors
-- 9.1 Always use  class . Avoid manipulating  prototype  directly.
-- Why?  class  syntax is more concise and easier to reason about.
-- 使用class，避免使用原型。这样语法上更加简练与合理。
+使用class，避免使用原型来模拟。这样语法上更加简练与合理。
 
--
-  // bad
-  function Queue(contents = []) {
-    this._queue = [...contents];
-  }
-  Queue.prototype.pop = function () {
-    const value = this._queue[0];
-    this._queue.splice(0, 1);
-    return value;
-  }
-
-
-  // good
-  class Queue {
-    constructor(contents = []) {
-      this._queue = [...contents];
+    // bad
+    function Queue(contents = []) {
+        this._queue = [...contents];
     }
-    pop() {
-      const value = this._queue[0];
-      this._queue.splice(0, 1);
-      return value;
+    Queue.prototype.pop = function () {
+        const value = this._queue[0];
+        this._queue.splice(0, 1);
+        return value;
     }
-  }
-- 9.2 Use  extends  for inheritance.
-- Why? It is a built-in way to inherit prototype functionality without breaking  instanceof .
-- 使用extend做继承，这是底层实现，高效稳定。
 
--
-  // bad
-  const inherits = require('inherits');
-  function PeekableQueue(contents) {
-    Queue.apply(this, contents);
-  }
-  inherits(PeekableQueue, Queue);
-  PeekableQueue.prototype.peek = function () {
-    return this._queue[0];
-  }
 
-  // good
-  class PeekableQueue extends Queue {
-    peek() {
-      return this._queue[0];
+    // good
+    class Queue {
+        constructor(contents = []) {
+            this._queue = [...contents];
+        }
+        pop() {
+            const value = this._queue[0];
+            this._queue.splice(0, 1);
+            return value;
+        }
     }
-  }
-- 9.3 Methods can return  this  to help with method chaining.
-- 可以通过在方法中返回this来做链式调用。
-// bad
-Jedi.prototype.jump = function () {
-  this.jumping = true;
-  return true;
-};
-Jedi.prototype.setHeight = function (height) {
-  this.height = height;
-};
-const luke = new Jedi();
-luke.jump(); // => true
-luke.setHeight(20); // => undefined
-// good
-class Jedi {
-  jump() {
-    this.jumping = true;
-    return this;
-  }
-  setHeight(height) {
-    this.height = height;
-    return this;
-  }
-}
-const luke = new Jedi();
-luke.jump()
-  .setHeight(20);
 
-- 9.4 It's okay to write a custom toString() method, just make sure it works successfully and causes no side effects.
-- 可以自定义toString方法，只要确保工作正确并且不会产生副作用。
-- class Jedi {
-  constructor(options = {}) {
-    this.name = options.name || 'no name';
-  }
-  getName() {
-    return this.name;
-  }
-  toString() {
-    return `Jedi - ${this.getName()}`;
-  }
-}
+使用extend做继承，这是底层实现，高效稳定。
 
-⬆ back to top
+    // bad
+    const inherits = require('inherits');
+    function PeekableQueue(contents) {
+        Queue.apply(this, contents);
+    }
+    inherits(PeekableQueue, Queue);
+    PeekableQueue.prototype.peek = function () {
+        return this._queue[0];
+    }
 
-##Modules
-- 10.1 Always use modules ( import / export ) over a non-standard module system. You can always transpile to your preferred module system.
-- Why? Modules are the future, let's start using the future now.
-- 使用es6的模块导入导出
+    // good
+    class PeekableQueue extends Queue {
+        peek() {
+            return this._queue[0];
+        }
+    }
 
--
-  // bad
-  const AirbnbStyleGuide = require('./AirbnbStyleGuide');
-  module.exports = AirbnbStyleGuide.es6;
+可以通过在方法中返回this来做链式调用。
 
-  // ok
-  import AirbnbStyleGuide from './AirbnbStyleGuide';
-  export default AirbnbStyleGuide.es6;
+    // bad
+    Jedi.prototype.jump = function () {
+        this.jumping = true;
+        return true;
+    };
+    Jedi.prototype.setHeight = function (height) {
+        this.height = height;
+    };
+    const luke = new Jedi();
+    luke.jump(); // => true
+    luke.setHeight(20); // => undefined
 
-  // best
-  import { es6 } from './AirbnbStyleGuide';
-  export default es6;
-- 10.2 Do not use wildcard imports.
-- 必要使用全部导入
-- Why? This makes sure you have a single default export.
+    // good
+    class Jedi {
+        jump() {
+            this.jumping = true;
+            return this;
+        }
+        setHeight(height) {
+            this.height = height;
+            return this;
+        }
+    }
+    const luke = new Jedi();
+    luke.jump().setHeight(20);
 
--
-  // bad
-  import * as AirbnbStyleGuide from './AirbnbStyleGuide';
+放心的自定义toString方法，只要确保工作正确并且不会产生副作用。
 
-  // good
-  import AirbnbStyleGuide from './AirbnbStyleGuide';
-- 10.3 And do not export directly from an import.
-- 不要直接导出import的内容
-- Why? Although the one-liner is concise, having one clear way to import and one clear way to export makes things consistent.
+    class Jedi {
+        constructor(options = {}) {
+            this.name = options.name || 'no name';
+        }
+        getName() {
+            return this.name;
+        }
+        toString() {
+            return `Jedi - ${this.getName()}`;
+        }
+    }
 
--
-  // bad
-  // filename es6.js
-  export { es6 as default } from './airbnbStyleGuide';
+##Modules模块
+使用es6的模块导入导出import/export
 
-  // good
-  // filename es6.js
-  import { es6 } from './AirbnbStyleGuide';
-  export default es6;
-⬆ back to top
+    // bad
+    const AirbnbStyleGuide = require('./AirbnbStyleGuide');
+    module.exports = AirbnbStyleGuide.es6;
+
+    // ok
+    import AirbnbStyleGuide from './AirbnbStyleGuide';
+    export default AirbnbStyleGuide.es6;
+
+    // best
+    import { es6 } from './AirbnbStyleGuide';
+    export default es6;
+
+不要使用\*做全部导入,这样能保证你的所有模块都有一个默认的export
+
+    // bad
+    import * as AirbnbStyleGuide from './AirbnbStyleGuide';
+
+    // good
+    import AirbnbStyleGuide from './AirbnbStyleGuide';
+
+不要直接导出import的内容
+    // bad
+    // filename es6.js
+    export { es6 as default } from './airbnbStyleGuide';
+
+    // good
+    // filename es6.js
+    import { es6 } from './AirbnbStyleGuide';
+    export default es6;
 
 ##Iterators and Generators
-- 11.1 Don't use iterators. Prefer JavaScript's higher-order functions like  map()  and  reduce()  instead of loops like  for-of .
-- Why? This enforces our immutable rule. Dealing with pure functions that return values is easier to reason about than side-effects.
-- 必要使用for...of，使用map（），reduce（）等替代方案，
-- eslint rules:  no-iterator .
+不要使用for...of，使用map（），reduce（）等替代方案   
+eslint rules:  no-iterator .
 
--
-  const numbers = [1, 2, 3, 4, 5];
+    const numbers = [1, 2, 3, 4, 5];
 
-  // bad
-  let sum = 0;
-  for (let num of numbers) {
-    sum += num;
-  }
+    // bad
+    let sum = 0;
+    for (let num of numbers) {
+        sum += num;
+    }
 
-  sum === 15;
+    sum === 15;
 
-  // good
-  let sum = 0;
-  numbers.forEach((num) => sum += num);
-  sum === 15;
+    // good
+    let sum = 0;
+    numbers.forEach((num) => sum += num);
+    sum === 15;
 
-  // best (use the functional force)
-  const sum = numbers.reduce((total, num) => total + num, 0);
-  sum === 15;
-- 11.2 Don't use generators for now.
-- Why? They don't transpile well to ES5.
-- 不要使用generators，generators不能很好的转换为ES5
-⬆ back to top
+    // best (use the functional force)
+    const sum = numbers.reduce((total, num) => total + num, 0);
+    sum === 15;
+
+__暂时__不要使用generators，generators不能很好的转换为ES5
 
 ##Properties
-- 12.1 Use dot notation when accessing properties.
-- 使用.来访问属性
-- eslint rules:  dot-notation .
+使用.来访问属性
+eslint rules:  dot-notation .
 
--
-  const luke = {
-    jedi: true,
-    age: 28,
-  };
+    const luke = {
+        jedi: true,
+        age: 28,
+    };
 
-  // bad
-  const isJedi = luke['jedi'];
+    // bad
+    const isJedi = luke['jedi'];
 
-  // good
-  const isJedi = luke.jedi;
-- 12.2 Use subscript notation  []  when accessing properties with a variable.
-- 当属性名是变量时，使用[]来访问属性
-- const luke = {
-  jedi: true,
-  age: 28,
-};
-function getProp(prop) {
-  return luke[prop];
-}
-const isJedi = getProp('jedi');
+    // good
+    const isJedi = luke.jedi;
 
-⬆ back to top
+当属性名是变量时，使用[]来访问属性
+
+    const luke = {
+        jedi: true,
+        age: 28,
+    };
+    function getProp(prop) {
+        return luke[prop];
+    }
+    const isJedi = getProp('jedi');
 
 ##Variables
-- 13.1 Always use  const  to declare variables. Not doing so will result in global variables. We want to avoid polluting the global namespace. Captain Planet warned us of that.
+使用const来定义变量,不这么做的话会导致变量上升为全局变量
 
--
-使用const来定义变脸。
-// bad
-superPower = new SuperPower();
+    // bad
+    superPower = new SuperPower();
 
-// good
-const superPower = new SuperPower();
-- 13.2 Use one  const  declaration per variable.
-- Why? It's easier to add new variable declarations this way, and you never have to worry about swapping out a  ;  for a  ,  or introducing punctuation-only diffs.
-- 每个变量单独声明。
-- eslint rules:  one-var .
+    // good
+    const superPower = new SuperPower();
 
--
-  // bad
-  const items = getItems(),
-      goSportsTeam = true,
-      dragonball = 'z';
+每个变量单独声明。这样在你增删变量定义时，就不用纠结我到底是逗号结尾还是分好结尾了。
+eslint rules:  one-var .
 
-  // bad
-  // (compare to above, and try to spot the mistake)
-  const items = getItems(),
-      goSportsTeam = true;
-      dragonball = 'z';
+    // bad
+    const items = getItems(),
+        goSportsTeam = true,
+        dragonball = 'z';
 
-  // good
-  const items = getItems();
-  const goSportsTeam = true;
-  const dragonball = 'z';
-- 13.3 Group all your  const s and then group all your  let s.
-- Why? This is helpful when later on you might need to assign a variable depending on one of the previous assigned variables.
-- const变量写一起，let变量协一起。
--   // bad
--   let i, len, dragonball,
-      items = getItems(),
-      goSportsTeam = true;
-  // bad
-  let i;
-  const items = getItems();
-  let dragonball;
-  const goSportsTeam = true;
-  let len;
-  // good
-  const goSportsTeam = true;
-  const items = getItems();
-  let dragonball;
-  let i;
-  let length;
+    // bad
+    // (compare to above, and try to spot the mistake)
+    const items = getItems(),
+        goSportsTeam = true;//说实话，我以前经常遇到
+        dragonball = 'z';
 
-- 13.4 Assign variables where you need them, but place them in a reasonable place.
-- Why?  let  and  const  are block scoped and not function scoped.
-- 在你需要的地方来定义变量。因为let跟const是块级作用域变量。
+    // good
+    const items = getItems();
+    const goSportsTeam = true;
+    const dragonball = 'z';
 
--
-  // good
-  function () {
-    test();
-    console.log('doing stuff..');
+const变量写一起，let变量协一起。
 
-    //..other stuff..
+    // bad
+    let i, len, dragonball,
+        items = getItems(),
+        goSportsTeam = true;
 
-    const name = getName();
+    // bad
+    let i;
+    const items = getItems();
+    let dragonball;
+    const goSportsTeam = true;
+    let len;
 
-    if (name === 'test') {
-      return false;
+    // good
+    const goSportsTeam = true;
+    const items = getItems();
+
+    let dragonball;
+    let i;
+    let length;
+
+在你需要的地方来定义变量。因为let跟const是块级作用域变量。
+
+    // good
+    function () {
+        test();
+        console.log('doing stuff..');
+
+        //..other stuff..
+
+        const name = getName();
+
+        if (name === 'test') {
+            return false;
+        }
+
+        return name;
     }
 
-    return name;
-  }
+    // bad - unnecessary function call
+    function (hasName) {
+        const name = getName();
 
-  // bad - unnecessary function call
-  function (hasName) {
-    const name = getName();
+        if (!hasName) {
+            return false;
+        }
 
-    if (!hasName) {
-      return false;
+        this.setFirstName(name);
+
+        return true;
     }
 
-    this.setFirstName(name);
+    // good
+    function (hasName) {
+        if (!hasName) {
+            return false;
+        }
 
-    return true;
-  }
+        const name = getName();
+        this.setFirstName(name);
 
-  // good
-  function (hasName) {
-    if (!hasName) {
-      return false;
+        return true;
     }
 
-    const name = getName();
-    this.setFirstName(name);
+##Hoisting变量定义的自上升,自动上升到该作用域的顶部
+使用`var`关键字参数的定义会自动升到作用域的最顶部，但是赋值语句不会升至顶部。
+而`const`和`let`关键字所声明的变量是由一种新的设计观念(TDZ)所保护的,并不会自上升,所以有必要了解为何我们说`typeof`不再是一个万无一失的方法.
 
-    return true;
-  }
-⬆ back to top
+    // we know this wouldn't work (assuming there
+    // is no notDefined global variable)
+    function example() {
+        console.log(notDefined); // => throws a ReferenceError
+    }
 
-##Hoisting
-- 14.1  var  declarations get hoisted to the top of their scope, their assignment does not.
-- var 参数的定义会自动升到作用域的最顶部，但是赋值语句不会升至顶部。
-- const  and  let  declarations are blessed with a new concept called Temporal Dead Zones (TDZ). It's important to know why typeof is no longer safe.
-- // we know this wouldn't work (assuming there
-// is no notDefined global variable)
-function example() {
-  console.log(notDefined); // => throws a ReferenceError
-}
+    // creating a variable declaration after you
+    // reference the variable will work due to
+    // variable hoisting. Note: the assignment
+    // value of `true` is not hoisted.
+    function example() {
+        console.log(declaredButNotAssigned); // => undefined
+        var declaredButNotAssigned = true;
+    }
 
-// creating a variable declaration after you
-// reference the variable will work due to
-// variable hoisting. Note: the assignment
-// value of `true` is not hoisted.
-function example() {
-  console.log(declaredButNotAssigned); // => undefined
-  var declaredButNotAssigned = true;
-}
+    // The interpreter is hoisting the variable
+    // declaration to the top of the scope,
+    // which means our example could be rewritten as:
+    function example() {
+        let declaredButNotAssigned;
+        console.log(declaredButNotAssigned); // => undefined
+        declaredButNotAssigned = true;
+    }
 
-// The interpreter is hoisting the variable
-// declaration to the top of the scope,
-// which means our example could be rewritten as:
-function example() {
-  let declaredButNotAssigned;
-  console.log(declaredButNotAssigned); // => undefined
-  declaredButNotAssigned = true;
-}
+    // using const and let
+    function example() {
+        console.log(declaredButNotAssigned); // => throws a ReferenceError
+        console.log(typeof declaredButNotAssigned); // => throws a ReferenceError
+        const declaredButNotAssigned = true;
+    }
 
-// using const and let
-function example() {
-  console.log(declaredButNotAssigned); // => throws a ReferenceError
-  console.log(typeof declaredButNotAssigned); // => throws a ReferenceError
-  const declaredButNotAssigned = true;
-}
-- 14.2 Anonymous function expressions hoist their variable name, but not the function assignment.
-- function example() {
-  console.log(anonymous); // => undefined
+匿名函数会自上升变量，而不会将变量赋值自上升
 
-  anonymous(); // => TypeError anonymous is not a function
+    function example() {
+        console.log(anonymous); // => undefined
 
-  var anonymous = function () {
-    console.log('anonymous function expression');
-  };
-}
-- 14.3 Named function expressions hoist the variable name, not the function name or the function body.
-- function example() {
-  console.log(named); // => undefined
+        anonymous(); // => TypeError anonymous is not a function
 
-  named(); // => TypeError named is not a function
+        var anonymous = function () {
+            console.log('anonymous function expression');
+        };
+    }
 
-  superPower(); // => ReferenceError superPower is not defined
+命名函数会自上升变量名，而不会自上升函数名或者函数定义
 
-  var named = function superPower() {
-    console.log('Flying');
-  };
-}
+    function example() {
+        console.log(named); // => undefined
 
-// the same is true when the function name
-// is the same as the variable name.
-function example() {
-  console.log(named); // => undefined
+        named(); // => TypeError named is not a function
 
-  named(); // => TypeError named is not a function
+        superPower(); // => ReferenceError superPower is not defined
 
-  var named = function named() {
-    console.log('named');
-  }
-}
-- 14.4 Function declarations hoist their name and the function body.
-- function example() {
-  superPower(); // => Flying
+        var named = function superPower() {
+            console.log('Flying');
+        };
+    }
 
-  function superPower() {
-    console.log('Flying');
-  }
-}
-- For more information refer to JavaScript Scoping & Hoisting by Ben Cherry.
-⬆ back to top
+    // the same is true when the function name
+    // is the same as the variable name.
+    function example() {
+        console.log(named); // => undefined
+
+        named(); // => TypeError named is not a function
+
+        var named = function named() {
+            console.log('named');
+        }
+    }
+
+声明式函数会自上升函数名以及函数定义
+
+    function example() {
+        superPower(); // => Flying
+
+        function superPower() {
+            console.log('Flying');
+        }
+    }
+
+更多关于JavaScript作用域以及自上升的信息请参考[JavaScript Scoping & Hoisting](http://www.adequatelygood.com/JavaScript-Scoping-and-Hoisting.html) by Ben Cherry.
 
 ##Comparison Operators & Equality
 - 15.1 Use  ===  and  !==  over  ==  and  != .Undefined evaluates to falseNull evaluates to falseBooleans evaluate to the value of the booleanNumbers evaluate to false if +0, -0, or NaN, otherwise true
