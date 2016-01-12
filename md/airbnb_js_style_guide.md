@@ -57,9 +57,8 @@ eslint rules:  no-new-object.
   // good
   const item = {};
 
-如果编写需要在浏览器端执行的代码，需要注意不能使用保留字/关键字作为键值（key）。在IE8中会发生问题。在服务器端或者ES6的模块中使用这些保留字并不会产生问题。
-保留字列表
-[Keyword&FutureReservedWord&NullLiteral&BooleanLiteral](http://es5.github.io/#x7.6.1)
+如果编写需要在浏览器端执行的代码，需要注意不能使用保留字/关键字作为键值（key）。在IE8中会发生问题。在服务器端或者ES6的模块中使用这些保留字并不会产生问题。   
+保留字列表[Keyword&FutureReservedWord&NullLiteral&BooleanLiteral](http://es5.github.io/#x7.6.1)
 
     // bad
     const superman = {
@@ -843,7 +842,7 @@ const变量写一起，let变量协一起。
 更多关于JavaScript作用域以及自上升的信息请参考[JavaScript Scoping & Hoisting](http://www.adequatelygood.com/JavaScript-Scoping-and-Hoisting.html) by Ben Cherry.
 
 ##Comparison Operators & Equality
-使用===与!==做比较
+使用`===`与`!==`做比较
 条件表达式如`if`会调用`ToBoolean`这个抽象方法来做强制转换,遵循以下这个转换原则:   
 `Objects` 计算结果为 `true`   
 空字符串''计算结果为`false`，非空字符串计算为`true`   
@@ -1555,125 +1554,138 @@ eslint rules:  no-underscore-dangle .
 
 ##Accessors
 - 23.1 Accessor functions for properties are not required.
-- 23.2 If you do make accessor functions use getVal() and setVal('hello').
-- // bad
-dragon.age();
+没有必要单独编写函数属性的获取方法
+如果非要有，使用`getVal()`和`setVal('hello')`方法
 
-// good
-dragon.getAge();
+    // bad
+    dragon.age();
 
-// bad
-dragon.age(25);
+    // good
+    dragon.getAge();
 
-// good
-dragon.setAge(25);
-- 23.3 If the property is a  boolean , use  isVal()  or  hasVal() .
-- // bad
-if (!dragon.age()) {
-  return false;
-}
+    // bad
+    dragon.age(25);
 
-// good
-if (!dragon.hasAge()) {
-  return false;
-}
-- 23.4 It's okay to create get() and set() functions, but be consistent.
-- class Jedi {
-  constructor(options = {}) {
-    const lightsaber = options.lightsaber || 'blue';
-    this.set('lightsaber', lightsaber);
-  }
+    // good
+    dragon.setAge(25);
 
-  set(key, val) {
-    this[key] = val;
-  }
+如果是布尔值的属性，使用`isVal()` 或者 `hasVal()`
 
-  get(key) {
-    return this[key];
-  }
-}
-⬆ back to top
+    // bad
+    if (!dragon.age()) {
+        return false;
+    }
+
+    // good
+    if (!dragon.hasAge()) {
+        return false;
+    }
+
+get set方法可以有，最好使用统一的实现
+
+    class Jedi {
+        constructor(options = {}) {
+            const lightsaber = options.lightsaber || 'blue';
+            this.set('lightsaber', lightsaber);
+        }
+
+        set(key, val) {
+            this[key] = val;
+        }
+
+        get(key) {
+            return this[key];
+        }
+    }
 
 ##Events
-- 24.1 When attaching data payloads to events (whether DOM events or something more proprietary like Backbone events), pass a hash instead of a raw value. This allows a subsequent contributor to add more data to the event payload without finding and updating every handler for the event. For example, instead of:
-- // bad
-$(this).trigger('listingUpdated', listing.id);
+使用对象做事件参数,这样便于以后的维护以及拓展
 
-...
+    // bad
+    $(this).trigger('listingUpdated', listing.id);
 
-$(this).on('listingUpdated', function (e, listingId) {
-  // do something with listingId
-});
-- prefer:
-- // good
-$(this).trigger('listingUpdated', { listingId: listing.id });
+    ...
 
-...
+    $(this).on('listingUpdated', function (e, listingId) {
+      // do something with listingId
+    });
 
-$(this).on('listingUpdated', function (e, data) {
-  // do something with data.listingId
-});
-- ⬆ back to top
+    // good
+    $(this).trigger('listingUpdated', { listingId: listing.id });
+
+    ...
+
+    $(this).on('listingUpdated', function (e, data) {
+      // do something with data.listingId
+    });
 
 ##jQuery
-- 25.1 Prefix jQuery object variables with a  $ .
-- // bad
-const sidebar = $('.sidebar');
+jQuery变量对象使用\$作为命名前缀
 
-// good
-const $sidebar = $('.sidebar');
+    // bad
+    const sidebar = $('.sidebar');
 
-// good
-const $sidebarBtn = $('.sidebar-btn');
-- 25.2 Cache jQuery lookups.
-- // bad
-function setSidebar() {
-  $('.sidebar').hide();
+    // good
+    const $sidebar = $('.sidebar');
 
-  // ...stuff...
+    // good
+    const $sidebarBtn = $('.sidebar-btn');
 
-  $('.sidebar').css({
-    'background-color': 'pink'
-  });
-}
+当使用jQuery的选择器时，使用变量保存引用
 
-// good
-function setSidebar() {
-  const $sidebar = $('.sidebar');
-  $sidebar.hide();
+    // bad
+    function setSidebar() {
+        $('.sidebar').hide();
 
-  // ...stuff...
+        // ...stuff...
 
-  $sidebar.css({
-    'background-color': 'pink'
-  });
-}
-- 25.3 For DOM queries use Cascading  $('.sidebar ul')  or parent > child  $('.sidebar > ul') . jsPerf
-- 25.4 Use  find  with scoped jQuery object queries.
-- // bad
-$('ul', '.sidebar').hide();
+        $('.sidebar').css({
+            'background-color': 'pink'
+        });
+    }
 
-// bad
-$('.sidebar').find('ul').hide();
+    // good
+    function setSidebar() {
+        const $sidebar = $('.sidebar');
+        $sidebar.hide();
 
-// good
-$('.sidebar ul').hide();
+        // ...stuff...
 
-// good
-$('.sidebar > ul').hide();
+        $sidebar.css({
+            'background-color': 'pink'
+        });
+    }
 
-// good
-$sidebar.find('ul').hide();
-⬆ back to top
+jQuery选择器使用链式查找或者子节点查找的方式，如`$('.sidebar ul')` ， `$('.sidebar > ul')`
+在子节点中查找时，使用find
+
+    // bad
+    $('ul', '.sidebar').hide();
+
+    // bad
+    $('.sidebar').find('ul').hide();
+
+    // good
+    $('.sidebar ul').hide();
+
+    // good
+    $('.sidebar > ul').hide();
+
+    // good
+    $sidebar.find('ul').hide();
+
+
+以上为所有对本文的翻译，以下为一些相关内容，暂时不做翻译
+//TODO:修改格式，完善翻译，跟原作者申请pull request 2016.1.12 Timiz Qi
+
+---
 
 ##ECMAScript 5 Compatibility
 - 26.1 Refer to Kangax's ES5 compatibility table.
-⬆ back to top
 
 ##ECMAScript 6 Styles
 - 27.1 This is a collection of links to the various es6 features.
 - Arrow FunctionsClassesObject ShorthandObject ConciseObject Computed PropertiesTemplate StringsDestructuringDefault ParametersRestArray SpreadsLet and ConstIterators and GeneratorsModules
-⬆ back to top
 
 ##Testing
 - 28.1 Yup.
@@ -1682,7 +1694,6 @@ $sidebar.find('ul').hide();
 }
 - 28.2 No, but seriously:
     - Whichever testing framework you use, you should be writing tests!Strive to write many small pure functions, and minimize where mutations occur.Be cautious about stubs and mocks - they can make your tests more brittle.We primarily use  mocha  at Airbnb.  tape  is also used occasionally for small, separate modules.100% test coverage is a good goal to strive for, even if it's not always practical to reach it.Whenever you fix a bug, write a regression test. A bug fixed without a regression test is almost certainly going to break again in the future.
-⬆ back to top
 
 ##Performance
 - On Layout & Web PerformanceString vs Array ConcatTry/Catch Cost In a LoopBang FunctionjQuery Find vs Context, SelectorinnerHTML vs textContent for script textLong String ConcatenationLoading...
@@ -1713,7 +1724,6 @@ Podcasts
 ##In the Wild
 This is a list of organizations that are using this style guide. Send us a pull request and we'll add you to the list.
 - Aan Zee: AanZee/javascriptAdult Swim: adult-swim/javascriptAirbnb: airbnb/javascriptApartmint: apartmint/javascriptAvalara: avalara/javascriptBillabong: billabong/javascriptBisk: bisk/javascriptBlendle: blendle/javascriptComparaOnline: comparaonline/javascriptCompass Learning: compasslearning/javascript-style-guideDailyMotion: dailymotion/javascriptDigitpaintdigitpaint/javascriptEcosia: ecosia/javascriptEvernote: evernote/javascript-style-guideExactTarget: ExactTarget/javascriptExpensifyExpensify/Style-GuideFlexberry: Flexberry/javascript-style-guideGawker Media: gawkermedia/javascriptGeneral Electric: GeneralElectric/javascriptGoodData: gooddata/gdc-js-styleGrooveshark: grooveshark/javascriptHow About We: howaboutwe/javascriptHuballin: huballin/javascriptHubSpot: HubSpot/javascriptHyper: hyperoslo/javascript-playbookInfoJobs: InfoJobs/JavaScript-Style-GuideIntent Media: intentmedia/javascriptJam3: Jam3/Javascript-Code-ConventionsJeopardyBot: kesne/jeopardy-botJSSolutions: JSSolutions/javascriptKinetica Solutions: kinetica/javascriptMighty Spring: mightyspring/javascriptMinnPost: MinnPost/javascriptMitocGroup: MitocGroup/javascriptModCloth: modcloth/javascriptMoney Advice Service: moneyadviceservice/javascriptMuber: muber/javascriptNational Geographic: natgeo/javascriptNational Park Service: nationalparkservice/javascriptNimbl3: nimbl3/javascriptOrion Health: orionhealth/javascriptPeerby: Peerby/javascriptRazorfish: razorfish/javascript-style-guidereddit: reddit/styleguide/javascriptReact: /facebook/react/blob/master/CONTRIBUTING.md#style-guideREI: reidev/js-style-guideRipple: ripple/javascript-style-guideSeekingAlpha: seekingalpha/javascript-style-guideShutterfly: shutterfly/javascriptSpringload: springload/javascriptStudentSphere: studentsphere/javascriptTarget: target/javascriptTheLadders: TheLadders/javascriptT4R Technology: T4R-Technology/javascriptVoxFeed: VoxFeed/javascript-style-guideWeggo: Weggo/javascriptZillow: zillow/javascriptZocDoc: ZocDoc/javascript
-⬆ back to top
 
 ##Translation
 This style guide is also available in other languages:
@@ -1734,7 +1744,6 @@ Copyright (c) 2014 Airbnb
 Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the 'Software'), to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so, subject to the following conditions:
 The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.
 THE SOFTWARE IS PROVIDED 'AS IS', WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
-⬆ back to top
 
 ##Amendments
 We encourage you to fork this guide and change the rules to fit your team's style guide. Below, you may list some amendments to the style guide. This allows you to periodically update your style guide without having to deal with merge conflicts.
