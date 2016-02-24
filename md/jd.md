@@ -45,14 +45,14 @@ ES6,模块化,nodejs,backbone,react,gulp,less,handlebars,bootstrap等
 转正之后延续该项目
 
 ### Percana Web Portal项目(2012年2月-2012年8月)
-**项目描述**：Web Portal是基于Percana Eclipse系统的一个针对终端目标用户的网站,保人可以通过该网站实时查看保险,基金等的信息,并进行操作申请.
-**职责范围**：3人前端小组leader,负责前端网站部分的开发
-**相关技术**：jquery,html,css,velocity模板等
+**项目描述**：Web Portal是基于Percana Eclipse系统的一个针对终端目标用户的网站,保人可以通过该网站实时查看保险,基金等的信息,并进行操作申请.  
+**职责范围**：3人前端小组leader,负责前端网站部分的开发  
+**相关技术**：jquery,html,css,velocity模板等  
 
 ### Market Smith项目(2012年8月-2012年12月)
 **项目描述**：MS是美国MarketSmith公司的一款IOS端和Web端股票分析咨询软件,在最初的4个月里,承担项目经理的职责,负责与美国客户沟通需求,管理项目团队开发工作.在这次工作中,得到了高强度,高压力的工作经验,对于沟通以及上级管理,下级管理以及项目管理有了更深刻的体会  
-**职责范围**：项目经理,负责项目最初4个月的需求沟通,项目管理  
-**相关技术**：ios,scrum,项目管理
+**职责范围**：项目经理,负责项目最初4个月的需求沟通,项目管理      
+**相关技术**：ios,scrum,项目管理  
 
 ## 浙江网新恒天软件有限公司(实习) （ 2010年5月 ~ 2011年6月 ）
 ### Percana ESM项目组(2010年5月-2011年1月)
@@ -71,24 +71,24 @@ ES6,模块化,nodejs,backbone,react,gulp,less,handlebars,bootstrap等
 
 ## 事例作品
 
- - [个人类库lovely.js](https://github.com/lastjune/lovelyjs)
- - [个人演示](http://www.lovelyjs.com/me/index.html)
- - [angular例子](http://www.lovelyjs.com/angular/index.html)
+ - [个人类库lovely.js](https://github.com/lastjune/lovelyjs)  
+ - [个人演示](http://www.lovelyjs.com/me/index.html)  
+ - [angular例子](http://www.lovelyjs.com/angular/  index.html)
 
 
 # 技能清单
 
 以下均为我熟练使用的技能
-- 开发语言：JavaScript,ES6
-- Web开发：NodeJs
-- Web框架：Backbone/React
-- 前端框架：Bootstrap/AngularJS/HTML5/Backbone/Flux
-- 前端工具：Bower/Gulp/SaSS/LeSS/Grunt
-- 数据库相关：MySQL/MongoDb
-- 版本管理、文档和自动化部署工具：Svn/Git/
-- 单元测试：jasmine
-- 云和开放平台：AWS
-- 开发工具：Vim,Mac
+- 开发语言：JavaScript,ES6   
+- Web开发：NodeJs  
+- Web框架：Backbone/React  
+- 前端框架：Bootstrap/AngularJS/HTML5/Backbone/Flux  
+- 前端工具：Bower/Gulp/SaSS/LeSS/Grunt  
+- 数据库相关：MySQL/MongoDb  
+- 版本管理、文档和自动化部署工具：Svn/Git/  
+- 单元测试：jasmine  
+- 云和开放平台：AWS  
+- 开发工具：Vim,Mac  
 
 ---
 
