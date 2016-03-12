@@ -2,3 +2,7 @@
 *.swp
 jhj-demo/node_modules/*
 react-demo/node_modules/*
+*/node_modules/*
+node_modules/*
+bower_components/*
+.DS_Store
