@@ -1,0 +1,4 @@
+Plugin 'maksimr/vim-jsbeautify'
+Plugin 'einars/js-beautify'
+Plugin 'Chiel92/vim-autoformat'
+Plugin 'vim-airline/vim-airline-themes'
